@@ -81,7 +81,9 @@ class Outreach:
                     found = re.findall(email_pattern, r.text)
                     for em in found:
                         em_lower = em.lower()
-                        # Ignore image/file extensions matched as email domain
+                        # Ignore placeholder and image/file extensions matched as email domain
+                        if any(p in em_lower for p in ["example.com", "example@", "vas@email.com", "your.address@email.com", "user@domain.com"]):
+                            continue
                         if not any(em_lower.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".webp", ".svg", ".js", ".css", ".gif"]):
                             return em
             except Exception:
@@ -124,6 +126,15 @@ class Outreach:
 
         sent_count = 0
         output_csv = get_results_cache_path()
+        history_file = os.path.join(ROOT_DIR, ".mp", "sent_emails_history.txt")
+        os.makedirs(os.path.dirname(history_file), exist_ok=True)
+
+        sent_history = set()
+        if os.path.exists(history_file):
+            with open(history_file, "r", encoding="utf-8") as hf:
+                for line in hf:
+                    if line.strip():
+                        sent_history.add(line.strip().lower())
 
         with open(output_csv, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
@@ -136,6 +147,11 @@ class Outreach:
                 if not email_addr:
                     warning(f"  ❌ Nema email-a na sajtu {site}")
                     writer.writerow([site, "", "No email"])
+                    continue
+
+                if email_addr.lower() in sent_history:
+                    warning(f"  ⚠️ Email {email_addr} je već dobio ponudu ranije. Preskačem duplikat...")
+                    writer.writerow([site, email_addr, "Already Sent"])
                     continue
 
                 if not self.is_valid_mx(email_addr):
@@ -158,6 +174,12 @@ class Outreach:
                     success(f"  ✅ Uspešno poslato na {email_addr} ({company_name})")
                     writer.writerow([site, email_addr, "Sent"])
                     sent_count += 1
+                    
+                    # Record sent email in history
+                    sent_history.add(email_addr.lower())
+                    with open(history_file, "a", encoding="utf-8") as hf:
+                        hf.write(email_addr.lower() + "\n")
+
                     time.sleep(2)
                 except Exception as err:
                     error(f"  ❌ Greška pri slanju na {email_addr}: {err}")

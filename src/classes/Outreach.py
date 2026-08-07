@@ -38,25 +38,70 @@ class Outreach:
         info(f"Tražim lokalne biznise i sajtove na web-u za: '{query}'...")
         urls = []
         excluded = [
-            "facebook.com", "instagram.com", "youtube.com", "linkedin.com", 
+            "facebook.com", "instagram.com", "youtube.com", "linkedin.com", "tiktok.com",
             "wikipedia.org", "yellowpages.com", "tripadvisor.com", "booking.com", 
             "kupujemprodajem.com", "halooglasi.com", "planplus.rs", "nadjidom.com", 
-            "mojgrad.rs", "bing.com", "microsoft.com", "google.com", "mirandre.com", "navidiku.rs"
+            "mojgrad.rs", "bing.com", "microsoft.com", "google.com", "mirandre.com", "navidiku.rs",
+            "4zida.rs", "infostud.com", "inspira.rs", "nekretnine.rs", "oglasi.rs", 
+            "cityexpert.rs", "011info.com", "daibau.rs", "ekapija.com", "portal-srbija.com", 
+            "firmesrbije.com", "pttimenik.com", "superprostor.com", "drbook.rs", "gohome.rs", 
+            "berzanekretnina.org", "realitica.com", "moj-majstor.rs", "kredium.rs", "haoss.org", 
+            "radiopingvin.com", "klikdofirme.com", "iskustva.online", "apartmani-u-beogradu.com", 
+            "carrentalbeograd.rs", "eistra.info", "cu.rs", "vslpu.edu.rs", "fsu.edu.rs", "ytong.com",
+            "stambeno.com", "infostan.rs", "posta.rs", "eps.rs", "pks.rs", "beograd.rs",
+            "jkp.rs", "jp.rs", "skupstina.rs", "voda.rs", "elektrane.rs", "kayak.com", "expedia.com",
+            "skyscanner.com", "rentalcars.com", "polovniautomobili.com", "polovniautomobili.rs", "mojauto.rs",
+            "checkatrade.com", "trustatrader.com", "yell.com", "cylex-uk.co.uk", "threebestrated.co.uk",
+            "njuskalo.hr", "mojkvart.hr", "moja-djelatnost.hr", "tvrtke.hr",
+            "yandex.com", "maps.yandex.ru", "autoservisisrbija.rs", "e-usluga.rs", "poslovne-strane.rs",
+            "biznisgroup.com", "infostar.rs", "krakendesign.rs", "lupostudio.rs"
         ]
 
         try:
             from ddgs import DDGS
-            with DDGS() as ddgs:
-                results = list(ddgs.text(query, max_results=limit * 2))
-                for r in results:
-                    u = r.get("href", "").strip()
-                    if u and not any(ex in u.lower() for ex in excluded):
-                        if u not in urls:
-                            urls.append(u)
-                            if len(urls) >= limit:
-                                break
+            for retry in range(3):
+                try:
+                    with DDGS(timeout=15) as ddgs:
+                        results = list(ddgs.text(query, max_results=limit * 2))
+                        for r in results:
+                            u = r.get("href", "").strip()
+                            u_lower = u.lower()
+                            if u and not any(ex in u_lower for ex in excluded) and not (".gov.rs" in u_lower or ".ac.rs" in u_lower or ".edu.rs" in u_lower):
+                                if u not in urls:
+                                    urls.append(u)
+                                    if len(urls) >= limit:
+                                        break
+                        if urls:
+                            break
+                except Exception as inner_e:
+                    time.sleep(1)
         except Exception as e:
             warning(f"Pretraga nije uspela: {e}")
+
+        # Fallback multi-engine SERP Scraper (Bing & DuckDuckGo HTML) if DDGS timed out
+        if not urls:
+            search_urls = [
+                f"https://www.bing.com/search?q={requests.utils.quote(query)}",
+                f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}"
+            ]
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+            for s_url in search_urls:
+                try:
+                    resp = requests.get(s_url, headers=headers, timeout=10)
+                    if resp.status_code == 200:
+                        found_urls = re.findall(r'href="(https?://[^"]+)"', resp.text)
+                        for u in found_urls:
+                            u_clean = u.split("&")[0].split("?")[0].strip()
+                            u_lower = u_clean.lower()
+                            if u_clean and not any(ex in u_lower for ex in excluded) and not any(x in u_lower for x in ["duckduckgo.com", "bing.com", "microsoft.com", ".gov.rs", ".ac.rs", ".edu.rs"]):
+                                if u_clean not in urls:
+                                    urls.append(u_clean)
+                                    if len(urls) >= limit:
+                                        break
+                        if urls:
+                            break
+                except Exception:
+                    continue
 
         success(f"Pronađeno {len(urls)} jedinstvenih sajtova biznisa!")
         return urls
@@ -82,10 +127,16 @@ class Outreach:
                     for em in found:
                         em_lower = em.lower()
                         # Ignore placeholder and image/file extensions matched as email domain
-                        if any(p in em_lower for p in ["example.com", "example@", "vas@email.com", "your.address@email.com", "user@domain.com"]):
+                        invalid_patterns = [
+                            "example.com", "example@", "vas@email.com", "your.address@email.com", "user@domain.com", 
+                            "your@email.com", "john.doe", "jane.doe", "sentry.io", "wixpress.com", "schema.org", 
+                            "w3.org", "wordpress.org", "wp.com", "elementor.com", "themeforest.net", "bootstrapmade.com",
+                            "sentry-next", "ingest.de.sentry"
+                        ]
+                        if any(p in em_lower for p in invalid_patterns):
                             continue
                         if not any(em_lower.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".webp", ".svg", ".js", ".css", ".gif"]):
-                            return em
+                            return em.strip()
             except Exception:
                 continue
         return ""
@@ -95,16 +146,31 @@ class Outreach:
         Verify if the email domain has active DNS MX records.
         """
         try:
-            domain = email.split("@")[1].strip()
+            if not email or "@" not in email:
+                return False
+            domain = email.split("@")[1].strip().lower()
+            
+            bogus_domains = ["sentry.io", "wixpress.com", "example.com", "domain.com", "email.com", "schema.org", "w3.org"]
+            if any(b in domain for b in bogus_domains):
+                return False
+
             import dns.resolver
             resolver = dns.resolver.Resolver()
             resolver.nameservers = ['8.8.8.8', '1.1.1.1']
-            resolver.timeout = 4
-            resolver.lifetime = 4
+            resolver.timeout = 3
+            resolver.lifetime = 3
             answers = resolver.resolve(domain, "MX")
             return len(answers) > 0
+        except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+            return False
         except Exception:
-            return True
+            try:
+                import socket
+                domain = email.split("@")[1].strip().lower()
+                socket.gethostbyname(domain)
+                return True
+            except Exception:
+                return False
 
     def start(self) -> None:
         """
@@ -130,11 +196,18 @@ class Outreach:
         os.makedirs(os.path.dirname(history_file), exist_ok=True)
 
         sent_history = set()
+        sent_domains = set()
+
         if os.path.exists(history_file):
             with open(history_file, "r", encoding="utf-8") as hf:
                 for line in hf:
-                    if line.strip():
-                        sent_history.add(line.strip().lower())
+                    cleaned_item = line.strip().lower()
+                    if cleaned_item:
+                        sent_history.add(cleaned_item)
+                        if "@" in cleaned_item:
+                            sent_domains.add(cleaned_item.split("@")[1].strip())
+                        else:
+                            sent_domains.add(cleaned_item)
 
         with open(output_csv, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
@@ -142,15 +215,29 @@ class Outreach:
 
             for idx, site in enumerate(websites, 1):
                 info(f"[{idx}/{len(websites)}] Analiziram sajt: {site}")
-                email_addr = self.extract_email_from_website(site)
+                
+                # Extract domain of the site
+                site_domain = ""
+                site_domain_match = re.search(r"https?://(?:www\.)?([^/]+)", site.lower())
+                if site_domain_match:
+                    site_domain = site_domain_match.group(1).strip()
+
+                if site_domain and (site_domain in sent_domains or site_domain in sent_history):
+                    warning(f"  ⚠️ Sajt/Domen {site_domain} je već dobio ponudu ranije. Preskačem duplikat...")
+                    writer.writerow([site, "", "Already Sent (Domain)"])
+                    continue
+
+                email_addr = self.extract_email_from_website(site).strip().lower()
                 
                 if not email_addr:
                     warning(f"  ❌ Nema email-a na sajtu {site}")
                     writer.writerow([site, "", "No email"])
                     continue
 
-                if email_addr.lower() in sent_history:
-                    warning(f"  ⚠️ Email {email_addr} je već dobio ponudu ranije. Preskačem duplikat...")
+                email_domain = email_addr.split("@")[1].strip() if "@" in email_addr else ""
+
+                if email_addr in sent_history or email_domain in sent_domains or (site_domain and site_domain in sent_domains):
+                    warning(f"  ⚠️ Email/Domen {email_addr} je već dobio ponudu ranije. Preskačem duplikat...")
                     writer.writerow([site, email_addr, "Already Sent"])
                     continue
 
@@ -162,10 +249,8 @@ class Outreach:
                 info(f"  Pronađen aktivan email: {email_addr}. Šaljem ponudu...")
                 try:
                     company_name = "biznis"
-                    # Extract domain name as fallback company name
-                    domain_match = re.search(r"https?://(?:www\.)?([^/]+)", site)
-                    if domain_match:
-                        company_name = domain_match.group(1).split(".")[0].capitalize()
+                    if site_domain:
+                        company_name = site_domain.split(".")[0].capitalize()
 
                     subj = self.subject.replace("{{COMPANY_NAME}}", company_name)
                     body = raw_body.replace("{{COMPANY_NAME}}", company_name)
@@ -175,10 +260,17 @@ class Outreach:
                     writer.writerow([site, email_addr, "Sent"])
                     sent_count += 1
                     
-                    # Record sent email in history
-                    sent_history.add(email_addr.lower())
+                    # Record sent email and domain in history
+                    sent_history.add(email_addr)
+                    if email_domain:
+                        sent_domains.add(email_domain)
+                    if site_domain:
+                        sent_domains.add(site_domain)
+
                     with open(history_file, "a", encoding="utf-8") as hf:
-                        hf.write(email_addr.lower() + "\n")
+                        hf.write(email_addr + "\n")
+                        if site_domain:
+                            hf.write(site_domain + "\n")
 
                     time.sleep(2)
                 except Exception as err:

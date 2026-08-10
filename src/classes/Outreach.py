@@ -54,7 +54,8 @@ class Outreach:
             "checkatrade.com", "trustatrader.com", "yell.com", "cylex-uk.co.uk", "threebestrated.co.uk",
             "njuskalo.hr", "mojkvart.hr", "moja-djelatnost.hr", "tvrtke.hr",
             "yandex.com", "maps.yandex.ru", "autoservisisrbija.rs", "e-usluga.rs", "poslovne-strane.rs",
-            "biznisgroup.com", "infostar.rs", "krakendesign.rs", "lupostudio.rs"
+            "biznisgroup.com", "infostar.rs", "krakendesign.rs", "lupostudio.rs",
+            "soloherc.rs", "soloherc.co.rs", "soloherc.com", "soloherc.net", "solo-herc.rs", "soloherc"
         ]
 
         try:

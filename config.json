@@ -1,0 +1,43 @@
+{
+  "verbose": true,
+  "firefox_profile": "",
+  "headless": false,
+  "ollama_base_url": "http://127.0.0.1:11434",
+  "ollama_model": "",
+  "twitter_language": "English",
+  "nanobanana2_api_base_url": "https://generativelanguage.googleapis.com/v1beta",
+  "nanobanana2_api_key": "",
+  "nanobanana2_model": "gemini-3.1-flash-image-preview",
+  "nanobanana2_aspect_ratio": "9:16",
+  "threads": 1,
+  "zip_url": "",
+  "is_for_kids": false,
+  "google_maps_scraper": "https://github.com/gosom/google-maps-scraper/archive/refs/tags/v1.16.0.zip",
+  "email": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 465,
+    "username": "ivanbradic.biz@gmail.com",
+    "password": "excw jilu pgso kevf"
+  },
+  "google_maps_scraper_niche": "agencija za nekretnine prodaja stanova novogradnja Krusevac Trstenik Vrnjacka Banja agencija kontakt",
+  "outreach_signal": "signal_1_ads",
+  "scraper_timeout": 1200,
+  "outreach_message_subject": "Prezentacija za {{COMPANY_NAME}} - curenje konverzija i posetilaca na sajtu",
+  "outreach_message_body_file": "outreach_conversion.html",
+  "stt_provider": "local_whisper",
+  "whisper_model": "base",
+  "whisper_device": "auto",
+  "whisper_compute_type": "int8",
+  "assembly_ai_api_key": "",
+  "tts_voice": "Jasper",
+  "font": "bold_font.ttf",
+  "imagemagick_path": "",
+  "script_sentence_length": 4,
+  "post_bridge": {
+    "enabled": false,
+    "api_key": "",
+    "platforms": ["tiktok", "instagram"],
+    "account_ids": [],
+    "auto_crosspost": false
+  }
+}

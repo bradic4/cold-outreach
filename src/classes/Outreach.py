@@ -63,7 +63,7 @@ class Outreach:
             for retry in range(3):
                 try:
                     with DDGS(timeout=15) as ddgs:
-                        results = list(ddgs.text(query, max_results=limit * 2))
+                        results = list(ddgs.text(query, region="rs-sr", max_results=limit * 2))
                         for r in results:
                             u = r.get("href", "").strip()
                             u_lower = u.lower()
@@ -177,6 +177,25 @@ class Outreach:
         """
         Start automated outreach flow.
         """
+        # Daily cap check at the very start of run()
+        import json
+        from datetime import date
+        today_str = date.today().isoformat()
+        daily_stats_file = os.path.join(ROOT_DIR, ".mp", "daily_outreach_stats.json")
+        daily_count = 0
+        if os.path.exists(daily_stats_file):
+            try:
+                with open(daily_stats_file, "r", encoding="utf-8") as dsf:
+                    stats_data = json.load(dsf)
+                    if stats_data.get("date") == today_str:
+                        daily_count = stats_data.get("count", 0)
+            except Exception:
+                daily_count = 0
+
+        if daily_count >= 20:
+            warning(f"🛑 Dostignut maksimalni bezbednosni DNEVNI limit od 20 poslatih mejlova za danas ({today_str}). Slanje je u potpunosti pauzirano radi očuvanja reputacije naloga!")
+            return
+
         websites = self.search_business_websites(self.niche, limit=30)
         if not websites:
             error("Nijedan sajt nije pronađen. Proveri pretragu u config.json.")
@@ -185,19 +204,30 @@ class Outreach:
         with open(os.path.join(ROOT_DIR, self.body_file), "r", encoding="utf-8") as f:
             raw_body = f.read()
 
-        yag = yagmail.SMTP(
-            user=self.email_creds["username"],
-            password=self.email_creds["password"],
-            port=465,
-        )
+        smtp_server = self.email_creds.get("smtp_server", "smtp-mail.outlook.com")
+        smtp_port = int(self.email_creds.get("smtp_port", 587))
+        user_email = self.email_creds.get("username", "")
+        user_pass = self.email_creds.get("password", "")
 
         sent_count = 0
         output_csv = get_results_cache_path()
         history_file = os.path.join(ROOT_DIR, ".mp", "sent_emails_history.txt")
         os.makedirs(os.path.dirname(history_file), exist_ok=True)
 
+        def get_root_domain(url_or_email: str) -> str:
+            text = url_or_email.lower().replace("http://", "").replace("https://", "").replace("www.", "").split("/")[0].split(":")[0].strip()
+            if "@" in text:
+                text = text.split("@")[1]
+            parts = text.split(".")
+            if len(parts) >= 3 and parts[-2] in ["co", "org", "in", "edu", "ac", "gov", "com", "net", "biz"]:
+                return ".".join(parts[-3:])
+            elif len(parts) >= 2:
+                return ".".join(parts[-2:])
+            return text
+
         sent_history = set()
         sent_domains = set()
+        sent_prefixes = set()
 
         if os.path.exists(history_file):
             with open(history_file, "r", encoding="utf-8") as hf:
@@ -205,10 +235,14 @@ class Outreach:
                     cleaned_item = line.strip().lower()
                     if cleaned_item:
                         sent_history.add(cleaned_item)
+                        root_dom = get_root_domain(cleaned_item)
+                        if root_dom:
+                            sent_domains.add(root_dom)
                         if "@" in cleaned_item:
-                            sent_domains.add(cleaned_item.split("@")[1].strip())
-                        else:
-                            sent_domains.add(cleaned_item)
+                            user_prefix = cleaned_item.split("@")[0].strip()
+                            clean_prefix = re.sub(r"\d+$", "", user_prefix)
+                            if len(clean_prefix) > 4:
+                                sent_prefixes.add(clean_prefix)
 
         with open(output_csv, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
@@ -217,14 +251,15 @@ class Outreach:
             for idx, site in enumerate(websites, 1):
                 info(f"[{idx}/{len(websites)}] Analiziram sajt: {site}")
                 
-                # Extract domain of the site
                 site_domain = ""
                 site_domain_match = re.search(r"https?://(?:www\.)?([^/]+)", site.lower())
                 if site_domain_match:
                     site_domain = site_domain_match.group(1).strip()
 
-                if site_domain and (site_domain in sent_domains or site_domain in sent_history):
-                    warning(f"  ⚠️ Sajt/Domen {site_domain} je već dobio ponudu ranije. Preskačem duplikat...")
+                site_root = get_root_domain(site)
+
+                if (site_domain and (site_domain in sent_domains or site_domain in sent_history)) or (site_root and site_root in sent_domains):
+                    warning(f"  ⚠️ Sajt/Domen {site_domain} (koren: {site_root}) je već dobio ponudu ranije. Preskačem duplikat...")
                     writer.writerow([site, "", "Already Sent (Domain)"])
                     continue
 
@@ -236,9 +271,18 @@ class Outreach:
                     continue
 
                 email_domain = email_addr.split("@")[1].strip() if "@" in email_addr else ""
+                email_root = get_root_domain(email_addr)
+                email_prefix = re.sub(r"\d+$", "", email_addr.split("@")[0].strip()) if "@" in email_addr else ""
 
-                if email_addr in sent_history or email_domain in sent_domains or (site_domain and site_domain in sent_domains):
-                    warning(f"  ⚠️ Email/Domen {email_addr} je već dobio ponudu ranije. Preskačem duplikat...")
+                if (
+                    email_addr in sent_history 
+                    or (email_domain and email_domain in sent_domains) 
+                    or (email_root and email_root in sent_domains) 
+                    or (site_domain and site_domain in sent_domains)
+                    or (site_root and site_root in sent_domains)
+                    or (len(email_prefix) > 4 and email_prefix in sent_prefixes)
+                ):
+                    warning(f"  ⚠️ Email/Domen {email_addr} (koren: {email_root}) je već dobio ponudu ranije. Preskačem duplikat...")
                     writer.writerow([site, email_addr, "Already Sent"])
                     continue
 
@@ -253,11 +297,58 @@ class Outreach:
                     if site_domain:
                         company_name = site_domain.split(".")[0].capitalize()
 
+                    # Aggregator / News / Non-direct business domain filter
+                    junk_domains = ["jutarnji.hr", "blic.rs", "kupujemprodajem.org", "estitor.com", "telegraf.rs", "espreso.co.rs", "edukacija.rs", "srbija-nekretnine.org", "oglasi-srbija.com", "pinterest.com", "youtube.com", "facebook.com", "instagram.com", "linkedin.com", "tiktok.com", "wikipedia.org"]
+                    if any(jd in (site_domain or "").lower() for jd in junk_domains):
+                        warning(f"  ⚠️ Preskačem vesti/agregat sajt: {site}")
+                        writer.writerow([site, email_addr, "Skipped Aggregator"])
+                        continue
+
+                    # Daily cap check (max 20 per calendar day)
+                    import json
+                    from datetime import date
+                    today_str = date.today().isoformat()
+                    daily_stats_file = os.path.join(ROOT_DIR, ".mp", "daily_outreach_stats.json")
+                    daily_count = 0
+                    if os.path.exists(daily_stats_file):
+                        try:
+                            with open(daily_stats_file, "r", encoding="utf-8") as dsf:
+                                stats_data = json.load(dsf)
+                                if stats_data.get("date") == today_str:
+                                    daily_count = stats_data.get("count", 0)
+                        except Exception:
+                            daily_count = 0
+
+                    if daily_count >= 20:
+                        warning(f"  🛑 Dostignut maksimalni bezbednosni DNEVNI limit od 20 poslatih mejlova za {today_str}. Pauziramo slanje za danas radi potpunog očuvanja Gmail reputacije!")
+                        break
+
                     subj = self.subject.replace("{{COMPANY_NAME}}", company_name)
                     body = raw_body.replace("{{COMPANY_NAME}}", company_name)
 
-                    yag.send(to=email_addr, subject=subj, contents=body)
-                    success(f"  ✅ Uspešno poslato na {email_addr} ({company_name})")
+                    import smtplib
+                    from email.mime.text import MIMEText
+                    from email.mime.multipart import MIMEMultipart
+
+                    msg = MIMEMultipart("alternative")
+                    msg["From"] = f"Ivan Bradić <{user_email}>"
+                    msg["To"] = email_addr
+                    msg["Subject"] = subj
+                    msg.attach(MIMEText(body, "html", "utf-8"))
+
+                    if smtp_port == 465:
+                        with smtplib.SMTP_SSL(smtp_server, smtp_port, timeout=15) as server:
+                            server.login(user_email, user_pass)
+                            server.sendmail(user_email, email_addr, msg.as_string())
+                    else:
+                        with smtplib.SMTP(smtp_server, smtp_port, timeout=15) as server:
+                            server.ehlo()
+                            server.starttls()
+                            server.ehlo()
+                            server.login(user_email, user_pass)
+                            server.sendmail(user_email, email_addr, msg.as_string())
+
+                    success(f"  ✅ Uspešno poslato na {email_addr} ({company_name})!")
                     writer.writerow([site, email_addr, "Sent"])
                     sent_count += 1
                     
@@ -265,15 +356,36 @@ class Outreach:
                     sent_history.add(email_addr)
                     if email_domain:
                         sent_domains.add(email_domain)
+                    if email_root:
+                        sent_domains.add(email_root)
                     if site_domain:
                         sent_domains.add(site_domain)
+                    if site_root:
+                        sent_domains.add(site_root)
+                    if len(email_prefix) > 4:
+                        sent_prefixes.add(email_prefix)
 
                     with open(history_file, "a", encoding="utf-8") as hf:
                         hf.write(email_addr + "\n")
                         if site_domain:
                             hf.write(site_domain + "\n")
+                        if site_root and site_root != site_domain:
+                            hf.write(site_root + "\n")
 
-                    time.sleep(2)
+                    # Update daily counter
+                    daily_count += 1
+                    try:
+                        with open(daily_stats_file, "w", encoding="utf-8") as dsf:
+                            json.dump({"date": today_str, "count": daily_count}, dsf)
+                    except Exception:
+                        pass
+
+                    info(f"  ⏳ Čekam 20 sekundi (ljudski tempo) pre sledećeg slanja... (Danas poslato: {daily_count}/20)")
+                    time.sleep(20)
+
+                    if sent_count >= 3:
+                        info("  🛑 Dostignut bezbednosni limit od 3 poslata mejla po turi (zaštita naloga). Pauziram...")
+                        break
                 except Exception as err:
                     error(f"  ❌ Greška pri slanju na {email_addr}: {err}")
                     writer.writerow([site, email_addr, f"Error: {err}"])

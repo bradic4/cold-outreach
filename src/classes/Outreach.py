@@ -43,7 +43,7 @@ class Outreach:
             "kupujemprodajem.com", "halooglasi.com", "planplus.rs", "nadjidom.com", 
             "mojgrad.rs", "bing.com", "microsoft.com", "google.com", "mirandre.com", "navidiku.rs",
             "4zida.rs", "infostud.com", "inspira.rs", "nekretnine.rs", "oglasi.rs", 
-            "cityexpert.rs", "011info.com", "daibau.rs", "ekapija.com", "portal-srbija.com", 
+            "cityexpert.rs", "011info.com", "daibau.rs", "daibau.ba", "ekapija.com", "portal-srbija.com", 
             "firmesrbije.com", "pttimenik.com", "superprostor.com", "drbook.rs", "gohome.rs", 
             "berzanekretnina.org", "realitica.com", "moj-majstor.rs", "kredium.rs", "haoss.org", 
             "radiopingvin.com", "klikdofirme.com", "iskustva.online", "apartmani-u-beogradu.com", 
@@ -52,10 +52,14 @@ class Outreach:
             "jkp.rs", "jp.rs", "skupstina.rs", "voda.rs", "elektrane.rs", "kayak.com", "expedia.com",
             "skyscanner.com", "rentalcars.com", "polovniautomobili.com", "polovniautomobili.rs", "mojauto.rs",
             "checkatrade.com", "trustatrader.com", "yell.com", "cylex-uk.co.uk", "threebestrated.co.uk",
-            "njuskalo.hr", "mojkvart.hr", "moja-djelatnost.hr", "tvrtke.hr",
+            "njuskalo.hr", "mojkvart.hr", "moja-djelatnost.hr", "tvrtke.hr", "pronadji.ba", "doma.ba",
             "yandex.com", "maps.yandex.ru", "autoservisisrbija.rs", "e-usluga.rs", "poslovne-strane.rs",
             "biznisgroup.com", "infostar.rs", "krakendesign.rs", "lupostudio.rs",
-            "soloherc.rs", "soloherc.co.rs", "soloherc.com", "soloherc.net", "solo-herc.rs", "soloherc"
+            "soloherc.rs", "soloherc.co.rs", "soloherc.com", "soloherc.net", "solo-herc.rs", "soloherc",
+            "beogradski.press", "firma.co.rs", "mojakompanija.rs", "ls.rs", "autentik.net", "yumpu.com",
+            "scribd.com", "pdfcoffee.com", "polazak.rs", "arte.rs", "kreativnomentorstvo.com", "journal.rs",
+            "ozon.rs", "jub.rs", "jub.si", "jub.hr", "jub.ba", "wannabemagazine.com", "mpus.org.rs", "uklo.edu.mk",
+            "registarfirmi.me", "moja-djelatnost.me", "busticket4.me", "ajpes.si", "si21.com"
         ]
 
         try:
@@ -132,7 +136,8 @@ class Outreach:
                             "example.com", "example@", "vas@email.com", "your.address@email.com", "user@domain.com", 
                             "your@email.com", "john.doe", "jane.doe", "sentry.io", "wixpress.com", "schema.org", 
                             "w3.org", "wordpress.org", "wp.com", "elementor.com", "themeforest.net", "bootstrapmade.com",
-                            "sentry-next", "ingest.de.sentry"
+                            "sentry-next", "ingest.de.sentry", "redakcija@", "urednik@", "press@", "marketing@ns-group",
+                            "azma@verat", "taxi.mne"
                         ]
                         if any(p in em_lower for p in invalid_patterns):
                             continue
@@ -151,7 +156,11 @@ class Outreach:
                 return False
             domain = email.split("@")[1].strip().lower()
             
-            bogus_domains = ["sentry.io", "wixpress.com", "example.com", "domain.com", "email.com", "schema.org", "w3.org"]
+            bogus_domains = [
+                "sentry.io", "wixpress.com", "example.com", "domain.com", "email.com", "schema.org", "w3.org",
+                "png", "jpg", "jpeg", "webp", "svg", "js", "css", "gif", "htm", "html", "pdf", "doc", "docx",
+                "registarfirmi.me", "moja-djelatnost.me", "beogradski.press", "firma.co.rs"
+            ]
             if any(b in domain for b in bogus_domains):
                 return False
 

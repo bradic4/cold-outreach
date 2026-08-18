@@ -19,10 +19,10 @@
     "username": "ivanbradic.biz@gmail.com",
     "password": "excw jilu pgso kevf"
   },
-  "google_maps_scraper_niche": "agencija za nekretnine prodaja stanova vila novogradnja Dubrovnik Cavtat Korcula Hvar agencija kontakt",
+  "google_maps_scraper_niche": "agencija za nekretnine prodaja stanova novogradnja Mostar Trebinje Siroki Brijeg Capljina Neum agencija kontakt",
   "outreach_signal": "signal_1_ads",
   "scraper_timeout": 1200,
-  "outreach_message_subject": "Prezentacija za {{COMPANY_NAME}} - curenje konverzija i posetilaca na sajtu",
+  "outreach_message_subject": "Pitanje u vezi sajta {{COMPANY_NAME}}",
   "outreach_message_body_file": "outreach_conversion.html",
   "stt_provider": "local_whisper",
   "whisper_model": "base",

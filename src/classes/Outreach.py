@@ -59,7 +59,7 @@ class Outreach:
             "beogradski.press", "firma.co.rs", "mojakompanija.rs", "ls.rs", "autentik.net", "yumpu.com",
             "scribd.com", "pdfcoffee.com", "polazak.rs", "arte.rs", "kreativnomentorstvo.com", "journal.rs",
             "ozon.rs", "jub.rs", "jub.si", "jub.hr", "jub.ba", "wannabemagazine.com", "mpus.org.rs", "uklo.edu.mk",
-            "registarfirmi.me", "moja-djelatnost.me", "busticket4.me", "ajpes.si", "si21.com"
+            "registarfirmi.me", "moja-djelatnost.me", "busticket4.me", "ajpes.si", "si21.com", "airmontenegro.com", "zaposli.me"
         ]
 
         try:

@@ -1,0 +1,147 @@
+import json
+
+leads_data = [
+    # 1. Event centri & Prestižni restorani za svadbe i korporativne prijeme (3.000€–15.000€ po eventu)
+    {
+        "niche": "events",
+        "name": "Kalemegdanska Terasa",
+        "email": "office@kalemegdanskaterasa.com",
+        "url": "https://kalemegdanskaterasa.com/",
+        "subject": "Pitanje u vezi rezervacije termina i proslava na kalemegdanskaterasa.com",
+        "hook_points": [
+            "Mobilni formular za upit slobodnih termina za vencanja i poslovne prijeme u 2 klika.",
+            "Kompresija visoko-rezolucionih fotografija ambijenta za otvaranje bez zastoja na 4G.",
+            "Google rang za prestizne restorane i proslave u Beogradu."
+        ]
+    },
+    {
+        "niche": "events",
+        "name": "Restoran Topčiderac",
+        "email": "restoran@topciderac.rs",
+        "url": "https://topciderac.rs/",
+        "subject": "Pitanje u vezi proslava i rezervacija na topciderac.rs",
+        "hook_points": [
+            "Fiksirano dugme 'Zatrazite ponudu za vencanje / event' na mobilnom ekranu.",
+            "Ubrzanje ucitavanja menija i galerije prostora na mobilnom internetu.",
+            "Lokalni Google SEO za svadbena i korporativna desavanja."
+        ]
+    },
+    {
+        "niche": "events",
+        "name": "Event Centar Promenada",
+        "email": "info@infinitybelgrade.com",
+        "url": "https://promenada.rs/",
+        "subject": "Pitanje u vezi prezentacije i upita za evente na promenada.rs",
+        "hook_points": [
+            "Mobilni konfigurator za odabir broja zvanica i tipa proslave sa telefona.",
+            "Smanjenje vremena otvaranja 3D prikaza i fotografija sale na telefonu.",
+            "Google rang za event centre na reci i korporativne proslave."
+        ]
+    },
+
+    # 2. Epoksidni podovi & Hidroizolacija (Velike industrijske i privatne karte)
+    {
+        "niche": "flooring_insulation",
+        "name": "Epoksidni Podovi Srbija (Epoxan)",
+        "email": "proizvodnja@epoksan.rs",
+        "url": "https://epoksidnipodovi.rs/",
+        "subject": "Pitanje u vezi proracuna kvadrature na epoksidnipodovi.rs",
+        "hook_points": [
+            "Kalkulator kvadrature i brzi upitnik za industrijske podove u 2 klika sa telefona.",
+            "Ubrzanje otvaranja tehnickih specifikacija i referenci na 4G mrezi.",
+            "Google pozicioniranje za epoksidne i poliuretanske podove u Srbiji."
+        ]
+    },
+    {
+        "niche": "flooring_insulation",
+        "name": "Hidroizolacija Beograd",
+        "email": "hidrodaas@hotmail.com",
+        "url": "https://hidroizolacijabeograd.rs/",
+        "subject": "Pitanje u vezi upita za hidroizolaciju krovova i temelja",
+        "hook_points": [
+            "Mobilni taster 'Zatrazite procenu i izlazak na teren' fiksiran pri dnu ekrana.",
+            "Kompresija slika sanacija krovova i bazena za trenutno otvaranje na telefonu.",
+            "Google pozicioniranje za hitne sanacije vlage i hidroizolaciju."
+        ]
+    },
+
+    # 3. Laboratorijska dijagnostika & Zdravstvo
+    {
+        "niche": "medical",
+        "name": "Jugolab Laboratorija",
+        "email": "btopola@jugolab.rs",
+        "url": "https://jugolab.rs/",
+        "subject": "Pitanje u vezi online zakazivanja analiza na jugolab.rs",
+        "hook_points": [
+            "Pojednostavljena mobilna pretraga analiza, paketa i radnog vremena laboratorija.",
+            "Brzo otvaranje cenovnika i spiska lokacija na mobilnom internetu.",
+            "Lokalni Google SEO za medicinske analize i patronaznu sluzbu."
+        ]
+    },
+
+    # 4. Knjigovodstvo i B2B poslovanje (Retainer ugovori)
+    {
+        "niche": "accounting",
+        "name": "Knjigovodstvo Bilans",
+        "email": "office@bilans.rs",
+        "url": "https://bilans.rs/",
+        "subject": "Pitanje u vezi ponude racunovodstva na bilans.rs",
+        "hook_points": [
+            "Mobilni upitnik za izbor paketa knjigovodstva za DOO i pausirce u 2 klika.",
+            "Optimizacija opisa usluga i tima savetnika za rad na pametnim telefonima.",
+            "Google rang za knjigovodstvene agencije i poresko savetovanje."
+        ]
+    },
+    {
+        "niche": "accounting",
+        "name": "Knjigovodstvo Faktura",
+        "email": "info@faktura.rs",
+        "url": "https://faktura.rs/",
+        "subject": "Pitanje u vezi prezentacije i B2B klijenata na faktura.rs",
+        "hook_points": [
+            "Kalkulator cene knjigovodstvenih usluga prilagodjen mobilnim ekranima.",
+            "Ubrzanje ucitavanja referenci i kontakt stranice na 4G mrezi.",
+            "Google pozicioniranje za knjigovodstvo za IT i preduzeca."
+        ]
+    },
+
+    # 5. Auto-škole (Mobilni upis kandidata)
+    {
+        "niche": "driving_school",
+        "name": "Auto škola Gazela Novi Sad",
+        "email": "autoskolagazela021@gmail.com",
+        "url": "https://autoskolagazela.rs/",
+        "subject": "Pitanje u vezi online upisa kandidata na autoskolagazela.rs",
+        "hook_points": [
+            "Mobilna forma za online upis kandidata u 2 klika bez dolaska u kancelariju.",
+            "Ubrzanje prikaza cenovnika na rate i termina casova na telefonu.",
+            "Lokalni Google SEO za auto-skole u Novom Sadu."
+        ]
+    },
+    {
+        "niche": "driving_school",
+        "name": "Auto škola Signal",
+        "email": "signal-obuka@mts.rs",
+        "url": "https://autoskolasignal.rs/",
+        "subject": "Pitanje u vezi prezentacije i upisa za Auto školu Signal",
+        "hook_points": [
+            "Fiksirano dugme 'Upisite se online' na dnu ekrana za kandidate na telefonima.",
+            "Kompresija slika poligona i voznog parka za rad bez zastoja na mobilnom.",
+            "Google profil za obuku vozaca B kategorije."
+        ]
+    }
+]
+
+with open('.mp/sent_emails_history.txt', 'r', encoding='utf-8', errors='ignore') as f:
+    history = set(line.strip().lower() for line in f if line.strip())
+
+verified_batch5 = []
+for lead in leads_data:
+    if lead['email'].lower() not in history:
+        verified_batch5.append(lead)
+    else:
+        print(f"Skipping already sent: {lead['email']}")
+
+print(f"Verified leads ready for Batch 5: {len(verified_batch5)}")
+with open("scratch/ready_leads_batch5.json", "w", encoding="utf-8") as f:
+    json.dump(verified_batch5, f, ensure_ascii=False, indent=2)

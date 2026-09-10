@@ -1,0 +1,231 @@
+import json
+
+leads_data = [
+    # 1. Stomatologija & Dentalni turizam
+    {
+        "niche": "dental",
+        "name": "Ordinacija Dentib",
+        "email": "stomatolog.ljubica@gmail.com",
+        "url": "https://dentib.rs/",
+        "subject": "Pitanje u vezi prezentacije za ordinaciju Dentib",
+        "hook_points": [
+            "Mobilno zakazivanje pregleda i ortopana u 1 klik sa telefona.",
+            "Ubrzanje otvaranja estetskih i protetskih radova na mobilnoj mrezi.",
+            "Lokalni Google SEO za stomatoloske pretrage u Beogradu."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Ordinacija Dentalis",
+        "email": "info@dentalis.rs",
+        "url": "https://dentalis.rs/",
+        "subject": "Pitanje u vezi akvizicije pacijenata na dentalis.rs",
+        "hook_points": [
+            "Fiksirano dugme 'Zakazite pregled' pri skrolovanju na dnu ekrana.",
+            "Kompresija slika radova pre i posle za otvaranje bez cekanja na 4G.",
+            "Google pozicioniranje za implantologiju i dentalni turizam."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Stomatoloska ordinacija Smile Time",
+        "email": "smiletime.rs@gmail.com",
+        "url": "https://smiletime.rs/",
+        "subject": "Pitanje u vezi mobilne verzije za Smile Time",
+        "hook_points": [
+            "Pojednostavljen mobilni formular za zakazivanje prvog pregleda.",
+            "Optimizacija prikaza stomatoloskih usluga za telefone.",
+            "Google profil za lokalne pretrage."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Stomatoloska ordinacija Vident",
+        "email": "office@vident.rs",
+        "url": "https://vident.rs/",
+        "subject": "Pitanje u vezi prezentacije na vident.rs",
+        "hook_points": [
+            "Mobilno slanje snimaka zuba u 2 klika za brzi plan terapije.",
+            "Ubrzanje ucitavanja stranica lekara i ordinacije na 4G.",
+            "Google rang za premijum stomatoloske usluge."
+        ]
+    },
+
+    # 2. Arhitektura & Fit-out / Izvođenje
+    {
+        "niche": "architecture",
+        "name": "Studio Struktura",
+        "email": "info@struktura.rs",
+        "url": "https://struktura.rs/",
+        "subject": "Pitanje u vezi struktura.rs i ucitavanja render portfolija",
+        "hook_points": [
+            "Kompresija 3D rendera i projekata za otvaranje ispod 1,6s na mobilnom.",
+            "Mobilni formular za investitore i slanje projektnih zadataka u 2 klika.",
+            "Google rang za arhitektonsko projektovanje i inzenjering."
+        ]
+    },
+    {
+        "niche": "architecture",
+        "name": "Studio Prodom",
+        "email": "office@prodom.rs",
+        "url": "https://prodom.rs/",
+        "subject": "Pitanje u vezi prezentacije i portfolio slika na prodom.rs",
+        "hook_points": [
+            "Optimizacija render slika na WebP format za trenutno otvaranje na telefonu.",
+            "Mobilni CTA taster za konsultacije i ponude na dnu ekrana.",
+            "Google pozicioniranje za arhitekturu i dizajn enterijera."
+        ]
+    },
+    {
+        "niche": "architecture",
+        "name": "Modulor Gradnja",
+        "email": "office@modulor.rs",
+        "url": "https://modulor.rs/",
+        "subject": "Pitanje u vezi B2B referenci i prezentacije na modulor.rs",
+        "hook_points": [
+            "Ubrzanje otvaranja inzenjerskih referenci i galerija objekata na 4G mrezi.",
+            "Mobilni upitnik za investitore i slanje tenderske dokumentacije u 2 klika.",
+            "Corporate SEO dominacija za velike gradjevinske poslove."
+        ]
+    },
+    {
+        "niche": "architecture",
+        "name": "Grading Kragujevac",
+        "email": "bgoffice@grading.rs",
+        "url": "https://grading.rs/",
+        "subject": "Pitanje u vezi gradjevinskih referenci na grading.rs",
+        "hook_points": [
+            "Optimizacija prikaza stambeno-poslovnih objekata za mobilne telefone.",
+            "Brzi kontakt taster za prodaju i ugovaranje radova.",
+            "Google rang za novogradnju i izvodjenje radova."
+        ]
+    },
+
+    # 3. Toplotne pumpe, grejanje, solari & klimatizacija
+    {
+        "niche": "solar_hvac",
+        "name": "Frigooprema",
+        "email": "info@frigooprema.rs",
+        "url": "https://frigooprema.rs/",
+        "subject": "Pitanje u vezi ponude grejanja i rashlade na frigooprema.rs",
+        "hook_points": [
+            "Kalkulator snage opreme i brzi zahtev za ponudu u 2 klika sa telefona.",
+            "Ubrzanje tehnickih kataloga i specifikacija na mobilnom internetu.",
+            "Google pozicioniranje pred pocetak grejne sezone."
+        ]
+    },
+    {
+        "niche": "solar_hvac",
+        "name": "Klima Pingvin",
+        "email": "servis@klimapingvin.rs",
+        "url": "https://klimapingvin.rs/",
+        "subject": "Pitanje u vezi zakazivanja servisa i montaze na klimapingvin.rs",
+        "hook_points": [
+            "Fiksirano mobilno dugme 'Pozovite servis odmah' pri skrolovanju.",
+            "Formular za hitne intervencije i ugradnju klima uredjaja.",
+            "Lokalni SEO profil za pretrage servisa klima i toplotnih pumpi."
+        ]
+    },
+    {
+        "niche": "solar_hvac",
+        "name": "Termo Oprema",
+        "email": "office@termooprema.rs",
+        "url": "https://termooprema.rs/",
+        "subject": "Pitanje u vezi opreme za grejanje na termooprema.rs",
+        "hook_points": [
+            "Pojednostavljen mobilni katalog kotlova i toplotnih pumpi.",
+            "Kompresija slika i tehnickih sema za rad bez pauza na 4G.",
+            "Google pozicioniranje za pred-zimsku ugradnju grejanja."
+        ]
+    },
+    {
+        "niche": "solar_hvac",
+        "name": "Frigo Servis",
+        "email": "frigoservis.rs@gmail.com",
+        "url": "https://frigoservis.rs/",
+        "subject": "Pitanje u vezi servisnih intervencija na frigoservis.rs",
+        "hook_points": [
+            "Brzi taster za poziv i zakazivanje izlaska na teren sa mobilnog.",
+            "Prikaz cenovnika i servisnih zona prilagodjen telefonu.",
+            "Google Maps rang za servis rashladnih i toplotnih sistema."
+        ]
+    },
+    {
+        "niche": "solar_hvac",
+        "name": "Klima Centar",
+        "email": "info@klimacentar.rs",
+        "url": "https://klimacentar.rs/",
+        "subject": "Pitanje u vezi online porudzbina na klimacentar.rs",
+        "hook_points": [
+            "Mobilni checkout u 2 klika za kupovinu i ugradnju klima uredjaja.",
+            "Ubrzanje prikaza artikala i filtera na mobilnoj mrezi.",
+            "Google rang za prodaju i montazu toplotnih pumpi i klima."
+        ]
+    },
+
+    # 4. Privatne klinike & Medicina
+    {
+        "niche": "medical",
+        "name": "Poliklinika Novamed",
+        "email": "novamed.subotica@gmail.com",
+        "url": "https://novamed.rs/",
+        "subject": "Pitanje u vezi zakazivanja pregleda u Poliklinici Novamed",
+        "hook_points": [
+            "Mobilno zakazivanje specijalistickih pregleda bez cekanja.",
+            "Optimizacija prikaza lekara i dijagnostickih metoda na telefonu.",
+            "Lokalni Google SEO za privatno zdravstvo u Subotici."
+        ]
+    },
+    {
+        "niche": "medical",
+        "name": "Poliklinika Panacea",
+        "email": "office@panacea.rs",
+        "url": "https://panacea.rs/",
+        "subject": "Pitanje u vezi prezentacije i zakazivanja na panacea.rs",
+        "hook_points": [
+            "Uocljivo dugme 'Zakazite pregled kod specijaliste' na dnu ekrana.",
+            "Ubrzanje ucitavanja cenovnika i opisa pregleda na 4G.",
+            "Google pozicioniranje za privatne preglede i dijagnostiku."
+        ]
+    },
+
+    # 5. Vinarije & Jesenji vinski turizam
+    {
+        "niche": "winery",
+        "name": "Vinarija Čilić",
+        "email": "gazdinstvo@cilic.rs",
+        "url": "https://cilic.rs/",
+        "subject": "Pitanje u vezi jesenjih poseta i narucivanja na cilic.rs",
+        "hook_points": [
+            "Mobilni buking degustacija i poseta vinariji u 2 klika.",
+            "Ubrzanje prikaza vinskih etiketa i galerije na telefonu.",
+            "Google rang za vinski turizam i porudzbine vina."
+        ]
+    },
+    {
+        "niche": "winery",
+        "name": "Vinarija Temet",
+        "email": "info@temet.rs",
+        "url": "https://temet.rs/",
+        "subject": "Pitanje u vezi vinskih tura i online prodaje na temet.rs",
+        "hook_points": [
+            "Jednostavan mobilni formular za rezervaciju degustacija i izleta.",
+            "Kompresija fotografija vinograda i objekta za rad bez zastoja na 4G.",
+            "Google pozicioniranje za vinski turizam u jesenjoj sezoni."
+        ]
+    }
+]
+
+with open('.mp/sent_emails_history.txt', 'r', encoding='utf-8', errors='ignore') as f:
+    history = set(line.strip().lower() for line in f if line.strip())
+
+verified_batch2 = []
+for lead in leads_data:
+    if lead['email'].lower() not in history:
+        verified_batch2.append(lead)
+    else:
+        print(f"Skipping already sent: {lead['email']}")
+
+print(f"Verified leads ready for Batch 2: {len(verified_batch2)}")
+with open("scratch/ready_leads_batch2.json", "w", encoding="utf-8") as f:
+    json.dump(verified_batch2, f, ensure_ascii=False, indent=2)

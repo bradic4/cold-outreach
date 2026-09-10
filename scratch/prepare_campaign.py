@@ -1,0 +1,254 @@
+import json
+
+# Refined list with high-confidence corporate/office emails
+refined_leads = [
+    # --- 1. DENTALNI TURIZAM & ALL-ON-4 ---
+    {
+        "niche": "dental",
+        "name": "Crown Dental",
+        "email": "office@crowndental.rs",
+        "url": "https://crowndental.rs",
+        "subject": "Pitanje u vezi prezentacije za inostrane pacijente na crowndental.rs",
+        "hook_points": [
+            "Mobilno slanje ortopan snimaka u 2 klika sa telefona za strane pacijente.",
+            "Ubrzanje otvaranja estetskih i implantoloskih radova na mobilnoj mrezi.",
+            "Google pozicioniranje za dentalni turizam i premijum implantologiju."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Stomatologija Dr Bede",
+        "email": "dr.bede@eunet.rs",
+        "url": "https://drbede.com",
+        "subject": "Pitanje u vezi prezentacije i zakazivanja za drbede.com u Novom Sadu",
+        "hook_points": [
+            "Fiksirano dugme 'Zakazite pregled u 1 klik' pri skrolovanju na dnu ekrana.",
+            "Optimizacija prikaza stomatoloskih usluga za pametne telefone.",
+            "Lokalni Google SEO za stomatoloske pretrage u Novom Sadu."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Eurodentist",
+        "email": "kontakt@eurodentist.rs",
+        "url": "https://eurodentist.rs",
+        "subject": "Pitanje u vezi akvizicije pacijenata na eurodentist.rs",
+        "hook_points": [
+            "Mobilna forma za brzi plan terapije i uvid u cene sa telefona.",
+            "Kompresija slika radova za otvaranje bez cekanja na 4G mrezi.",
+            "Google rang za dentalni turizam i protetiku u Beogradu."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Belgrade Dental",
+        "email": "info@belgradedental.com",
+        "url": "https://belgradedental.com",
+        "subject": "Pitanje u vezi prezentacije za inostrane pacijente na belgradedental.com",
+        "hook_points": [
+            "Brzo zakazivanje video konsultacija za pacijente iz inostranstva.",
+            "Ubrzanje engleske verzije sajta na mobilnim uredjajima.",
+            "Medjunarodni Google SEO za pacijente iz EU i dijaspore."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Ordinacija Vukovic",
+        "email": "info@ordinacijavukovic.rs",
+        "url": "https://ordinacijavukovic.rs",
+        "subject": "Pitanje u vezi mobilne verzije sajta ordinacijavukovic.rs",
+        "hook_points": [
+            "Direktan taster za zakazivanje pregleda i hitnih stomatoloskih intervencija.",
+            "Optimizacija galerije osmeha za trenutno ucitavanje na telefonu.",
+            "Lokalni SEO profil za pretrage u Beogradu."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Ordinacija Dentalux",
+        "email": "dentalux@live.com",
+        "url": "https://dentalux.rs",
+        "subject": "Pitanje u vezi prezentacije Dentalux",
+        "hook_points": [
+            "Mobilni obrazac za slanje snimaka i upita u 2 klika.",
+            "Ubrzanje prikaza tima lekara i ordinacije na 4G mrezi.",
+            "Google rang za premijum stomatologiju u Beogradu."
+        ]
+    },
+    {
+        "niche": "dental",
+        "name": "Lopicic Dental",
+        "email": "sandy@lopicic.com",
+        "url": "https://lopicic.com",
+        "subject": "Pitanje u vezi prezentacije za lopicic.com",
+        "hook_points": [
+            "Mobilno zakazivanje estetskih i protetskih radova u 1 klik.",
+            "Smanjenje vremena otvaranja stranica na mobilnom internetu.",
+            "Google profil za stomatoloske pretrage."
+        ]
+    },
+
+    # --- 2. ARHITEKTURA & ENTERIJERI (PAGESPEED & RENDERI) ---
+    {
+        "niche": "architecture",
+        "name": "Remorker Architects",
+        "email": "office@remorker.rs",
+        "url": "https://remorker.rs",
+        "subject": "Pitanje u vezi remorker.rs i ucitavanja render portfolija",
+        "hook_points": [
+            "Kompresija visoko-rezolucionih rendera za otvaranje ispod 1,6s na 4G.",
+            "Mobilni upitnik za investitore i slanje projektnih zadataka u 2 klika.",
+            "Google pozicioniranje za korporativne i urbane arhitektonske projekte."
+        ]
+    },
+    {
+        "niche": "architecture",
+        "name": "Dva Studio",
+        "email": "dvastudio.belgrade@gmail.com",
+        "url": "https://dvastudio.rs",
+        "subject": "Pitanje u vezi prezentacije i render slika na dvastudio.rs",
+        "hook_points": [
+            "Optimizacija portfolio slika na WebP format za trenutno otvaranje na telefonu.",
+            "Mobilni CTA taster za zakazivanje konsultacija na dnu ekrana.",
+            "Google rang za arhitektonsko projektovanje i enterijere u Beogradu."
+        ]
+    },
+    {
+        "niche": "architecture",
+        "name": "Arhi.pro",
+        "email": "office@arhipro.com",
+        "url": "https://arhipro.com",
+        "subject": "Pitanje u vezi prezentacije i ucitavanja referenci na arhipro.com",
+        "hook_points": [
+            "Ubrzanje otvaranja masivnih B2B galerija i projekata na mobilnoj mrezi.",
+            "Olakasan pristup specifikacijama i referencama za velike investitore.",
+            "Corporate SEO dominacija za vodece inzenjerske i fit-out poslove."
+        ]
+    },
+    {
+        "niche": "architecture",
+        "name": "Bureau Cube Partners",
+        "email": "office@bureaucube.com",
+        "url": "https://bureaucube.com",
+        "subject": "Pitanje u vezi prezentacije bureaucube.com",
+        "hook_points": [
+            "Optimizacija ucitavanja kompleksnih vizuelnih prikaza i rendera na 4G.",
+            "B2B forma za tenderske upite i saradnju sa telefona.",
+            "Google pozicioniranje za arhitektonske i inzenjerske projekte."
+        ]
+    },
+    {
+        "niche": "architecture",
+        "name": "Studio Autori",
+        "email": "office@autori.rs",
+        "url": "https://autori.rs",
+        "subject": "Pitanje u vezi mobilnog ucitavanja portfolija na autori.rs",
+        "hook_points": [
+            "Ubrzanje ucitavanja prepoznatljivih enterijerskih vizuala bez gubitka detalja.",
+            "Mobilno dugme za brzi upit klijenata visoke platižne moci.",
+            "Google profil i optimizacija za nagradjivani dizajn enterijera."
+        ]
+    },
+
+    # --- 3. TOPLOTNE PUMPE, GREJANJE & SOLARI (SEZONSKA HITNOST) ---
+    {
+        "niche": "solar_hvac",
+        "name": "Eko Solar",
+        "email": "info@ekosolar.rs",
+        "url": "https://ekosolar.rs",
+        "subject": "Pitanje u vezi jesenje ugradnje i ponude na ekosolar.rs",
+        "hook_points": [
+            "Kalkulator ustede i procena krova u 2 klika direktno sa telefona.",
+            "Fiksirano dugme 'Zatrazite proracun za solarnu elektranu' na dnu ekrana.",
+            "Google pozicioniranje za jesenje subvencije i pretrage solara."
+        ]
+    },
+    {
+        "niche": "solar_hvac",
+        "name": "Master Solar",
+        "email": "office@mastersolar.rs",
+        "url": "https://mastersolar.rs",
+        "subject": "Pitanje u vezi rezervacija za ugradnju solara na mastersolar.rs",
+        "hook_points": [
+            "Brzi mobilni upitnik za procenu snage sistema za domacinstva i firme.",
+            "Kompresija tehnicke dokumentacije i kataloga za rad na 4G.",
+            "Google rang za ugradnju solarnih panela u jesenjoj sezoni."
+        ]
+    },
+    {
+        "niche": "solar_hvac",
+        "name": "Cini Cacak",
+        "email": "office@cini.co.rs",
+        "url": "https://cini.rs",
+        "subject": "Pitanje u vezi online prezentacije grejnih tela na cini.rs",
+        "hook_points": [
+            "Pojednostavljen mobilni katalog i brza narudzbina grejnih tela sa telefona.",
+            "Ubrzanje otvaranja tehnickih specifikacija radijatora i grejaca.",
+            "Google pozicioniranje pred pocetak grejne sezone u Srbiji."
+        ]
+    },
+
+    # --- 4. PRIVATNE KLINIKE & DIJAGNOSTIKA ---
+    {
+        "niche": "medical",
+        "name": "Poliklinika Antamedica",
+        "email": "kontakt@antamedica.com",
+        "url": "https://antamedica.com",
+        "subject": "Pitanje u vezi mobilnog zakazivanja na antamedica.com",
+        "hook_points": [
+            "Mobilno zakazivanje specijalistickih pregleda u 2 klika bez cekanja na liniji.",
+            "Ubrzanje prikaza cenovnika i spiska lekara na mobilnom internetu.",
+            "Lokalni Google SEO za domove zdravlja i preglede u Beogradu."
+        ]
+    },
+    {
+        "niche": "medical",
+        "name": "Bolnica Parks",
+        "email": "office@parks.rs",
+        "url": "https://parks.rs",
+        "subject": "Pitanje u vezi prezentacije Specijalne bolnice Parks",
+        "hook_points": [
+            "Uocljivo mobilno dugme 'Zakazite pregled kod specijaliste' na dnu ekrana.",
+            "Optimizacija medicinskih opisa i fotografija za trenutni rad na telefonu.",
+            "Google pozicije za hirurgiju i dijagnostiku u Novom Sadu."
+        ]
+    },
+    {
+        "niche": "medical",
+        "name": "Poliklinika Cardios",
+        "email": "info@cardios.rs",
+        "url": "https://cardios.rs",
+        "subject": "Pitanje u vezi zakazivanja kardioloških pregleda na cardios.rs",
+        "hook_points": [
+            "Brzo mobilno zakazivanje ultrazvuka srca i holtera sa telefona.",
+            "Smanjenje vremena otvaranja stranica tima lekara na 4G mrezi.",
+            "Google pozicioniranje za kardiologiju u Novom Sadu."
+        ]
+    },
+    {
+        "niche": "medical",
+        "name": "Medical Centar",
+        "email": "office@medicalcentar.com",
+        "url": "https://medicalcentar.rs",
+        "subject": "Pitanje u vezi prezentacije medicalcentar.rs",
+        "hook_points": [
+            "Mobilni obrazac za brzi odabir lekara i zakazivanje termina.",
+            "Ubrzanje ucitavanja zdravstvenih paketa na mobilnom internetu.",
+            "Google rang za privatnu dijagnostiku i preglede."
+        ]
+    }
+]
+
+with open('.mp/sent_emails_history.txt', 'r', encoding='utf-8', errors='ignore') as f:
+    history = set(line.strip().lower() for line in f if line.strip())
+
+verified = []
+for lead in refined_leads:
+    if lead['email'].lower() not in history:
+        verified.append(lead)
+    else:
+        print(f"Skipping already sent: {lead['email']}")
+
+print(f"\nFinal verified ready-to-send leads: {len(verified)}")
+with open("scratch/ready_leads.json", "w", encoding="utf-8") as f:
+    json.dump(verified, f, ensure_ascii=False, indent=2)

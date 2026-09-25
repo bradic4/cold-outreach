@@ -1,0 +1,111 @@
+[
+  {
+    "name": "Linea Milanovic",
+    "url": "https://www.lineamilanovic.com/",
+    "niche": "custom_interior",
+    "email": "featherlight@1.7.14",
+    "all_emails": [
+      "featherlight@1.7.14",
+      "aos@2.3.1",
+      "studio@uniarchdesign.com"
+    ]
+  },
+  {
+    "name": "Artefacto Namestaj",
+    "url": "https://artefacto.rs/",
+    "niche": "custom_interior",
+    "email": "info@artefacto.rs",
+    "all_emails": [
+      "info@artefacto.rs"
+    ]
+  },
+  {
+    "name": "Geppetto Namestaj",
+    "url": "https://geppetto.rs/",
+    "niche": "custom_interior",
+    "email": "prodaja@geppetto.rs",
+    "all_emails": [
+      "prodaja@geppetto.rs"
+    ]
+  },
+  {
+    "name": "Catra Home Fashion",
+    "url": "https://catrahome.com/",
+    "niche": "custom_interior",
+    "email": "info@catrahome.com",
+    "all_emails": [
+      "info@catrahome.com",
+      "catraloft@gmail.com"
+    ]
+  },
+  {
+    "name": "Stilles Namestaj",
+    "url": "https://www.stilles.rs/",
+    "niche": "custom_interior",
+    "email": "maloprodaja@stilles.rs",
+    "all_emails": [
+      "knjigovodstvo@stilles.rs",
+      "maloprodaja@stilles.rs",
+      "namestaj@stilles.rs",
+      "office@stilles.rs",
+      "stilles@neobee.net",
+      "veleprodaja@stilles.rs"
+    ]
+  },
+  {
+    "name": "Neuromedica Poliklinika",
+    "url": "https://neuromedica.rs/",
+    "niche": "neurology_clinic",
+    "email": "info@neuromedica.rs",
+    "all_emails": [
+      "info@neuromedica.rs"
+    ]
+  },
+  {
+    "name": "Poliklinika Varnava",
+    "url": "https://varnava.rs/",
+    "niche": "private_clinic",
+    "email": "poliklinikavarnava@gmail.com",
+    "all_emails": [
+      "poliklinikavarnava@gmail.com",
+      "varnavafinansije@gmail.com"
+    ]
+  },
+  {
+    "name": "Argus Inzenjering",
+    "url": "https://argus-eng.com/",
+    "niche": "steel_construction",
+    "email": "marketing@argus-eng.com",
+    "all_emails": [
+      "marketing@argus-eng.com"
+    ]
+  },
+  {
+    "name": "Konstruktor Grupa",
+    "url": "https://konstruktorgrupa.com/",
+    "niche": "steel_construction",
+    "email": "office@konstruktorgrupa.com",
+    "all_emails": [
+      "office@konstruktorgrupa.com"
+    ]
+  },
+  {
+    "name": "Rapid Invest",
+    "url": "https://rapidinvest.rs/",
+    "niche": "steel_construction",
+    "email": "prodaja@rapidinvest.rs",
+    "all_emails": [
+      "axios@1.6.7",
+      "prodaja@rapidinvest.rs"
+    ]
+  },
+  {
+    "name": "Garnet Enterijeri",
+    "url": "https://garnet.rs/",
+    "niche": "custom_interior",
+    "email": "office@garnet.rs",
+    "all_emails": [
+      "office@garnet.rs"
+    ]
+  }
+]

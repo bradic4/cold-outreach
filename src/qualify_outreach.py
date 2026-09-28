@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from classes.Outreach import Outreach
 from config import ROOT_DIR, get_google_maps_scraper_niche, get_outreach_qualification_config
 from outreach.site_analyzer import SiteAnalyzer
-from outreach.lead_scorer import LeadScorer
+from outreach.lead_scorer import LeadScorer\nfrom outreach.result_classifier import ResultClassifier
 
 
 def main():
@@ -38,7 +38,14 @@ def main():
         signals = analyzer.analyze(website)
         score, reasons = LeadScorer.score(signals)
         bucket = LeadScorer.bucket(score, settings["qualified_threshold"], settings["priority_threshold"])
-        rows.append({**signals, "score": score, "bucket": bucket, "reasons": "; ".join(reasons)})
+        rows.append({
+            **signals,
+            "business_score": business_score,
+            "technical_score": technical_score,
+            "score": score,
+            "bucket": bucket,
+            "reasons": "; ".join(reasons),
+        })
 
     rows.sort(key=lambda x: x["score"], reverse=True)
     out_dir = os.path.join(ROOT_DIR, "data")

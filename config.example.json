@@ -35,8 +35,18 @@
   "post_bridge": {
     "enabled": false,
     "api_key": "",
-    "platforms": ["tiktok", "instagram"],
+    "platforms": [
+      "tiktok",
+      "instagram"
+    ],
     "account_ids": [],
     "auto_crosspost": false
+  },
+  "outreach_qualification": {
+    "search_region": "uk-en",
+    "dry_run": true,
+    "qualified_threshold": 7,
+    "priority_threshold": 10,
+    "analyze_limit": 30
   }
 }

@@ -36,3 +36,16 @@ def test_lighthouse_gate_marks_bad_performance_ready():
 
 def test_lighthouse_gate_rejects_fast_site():
     assert final_status({"bucket":"qualified","lighthouse_ok":True,"lighthouse_score":92,"lcp_ms":1700,"tbt_ms":80}) == "performance_good"
+
+
+def test_personalizer_uses_measured_performance():
+    from src.outreach.personalizer import Personalizer
+    text=Personalizer.finding({"lcp_ms":5500,"tbt_ms":2000})
+    assert "responsive" in text
+
+
+def test_contact_role_score_prefers_director():
+    from src.outreach.contact_finder import ContactFinder
+    high,_=ContactFinder()._score("andrew@example.co.uk","Andrew Wallace Director")
+    low,_=ContactFinder()._score("info@example.co.uk","general enquiries")
+    assert high > low

@@ -31,7 +31,7 @@ class Outreach:
         self.subject = get_outreach_message_subject()
         self.body_file = get_outreach_message_body_file()
 
-    def search_business_websites(self, query: str, limit: int = 30) -> list[str]:
+    def search_business_websites(self, query: str, limit: int = 30, region: str = "rs-sr") -> list[str]:
         """
         Search DuckDuckGo API for business websites matching the query.
         """
@@ -67,7 +67,7 @@ class Outreach:
             for retry in range(3):
                 try:
                     with DDGS(timeout=15) as ddgs:
-                        results = list(ddgs.text(query, region="rs-sr", max_results=limit * 2))
+                        results = list(ddgs.text(query, region=region, max_results=limit * 2))
                         for r in results:
                             u = r.get("href", "").strip()
                             u_lower = u.lower()

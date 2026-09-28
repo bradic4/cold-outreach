@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import statistics
 
 
 class LighthouseAnalyzer:
@@ -65,3 +66,20 @@ class LighthouseAnalyzer:
                 os.remove(path)
             except OSError:
                 pass
+
+
+    def analyze_median(self, url: str, runs: int = 3) -> dict:
+        results = [self.analyze(url) for _ in range(runs)]
+        good = [r for r in results if r.get("lighthouse_ok")]
+        if not good:
+            return results[-1] if results else {"lighthouse_ok": False, "lighthouse_error": "no runs"}
+        numeric = ("lighthouse_score","lcp_ms","tbt_ms","cls","fcp_ms","speed_index_ms","transfer_kb","requests")
+        out = {"lighthouse_ok": True, "lighthouse_runs": len(good)}
+        for key in numeric:
+            vals=[r[key] for r in good if isinstance(r.get(key),(int,float))]
+            out[key]=round(statistics.median(vals),3) if vals else ""
+        issues=[r.get("primary_issue") for r in good if r.get("primary_issue")]
+        out["primary_issue"]=max(set(issues),key=issues.count) if issues else ""
+        scores=[r.get("lighthouse_score") for r in good if isinstance(r.get("lighthouse_score"),(int,float))]
+        out["lighthouse_score_spread"]=round(max(scores)-min(scores),1) if scores else ""
+        return out

@@ -12,6 +12,8 @@ from outreach.lead_scorer import LeadScorer
 from outreach.lighthouse_analyzer import LighthouseAnalyzer
 from outreach.result_classifier import ResultClassifier
 from outreach.site_analyzer import SiteAnalyzer
+from outreach.contact_finder import ContactFinder
+from outreach.personalizer import Personalizer
 
 
 def final_status(row: dict) -> str:
@@ -45,7 +47,7 @@ def main():
         raise SystemExit("Use --query or configure google_maps_scraper_niche.")
 
     websites = Outreach().search_business_websites(query, limit=limit, region=region)
-    analyzer, lighthouse = SiteAnalyzer(), LighthouseAnalyzer()
+    analyzer, lighthouse, contacts = SiteAnalyzer(), LighthouseAnalyzer(), ContactFinder()
     rows = []
 
     for website in websites:
@@ -65,8 +67,10 @@ def main():
                "reasons": "; ".join(([class_reason] if class_reason else []) + reasons)}
 
         if bucket in {"qualified", "priority"} and not args.skip_lighthouse:
-            row.update(lighthouse.analyze(row["url"]))
+            row.update(lighthouse.analyze_median(row["url"], runs=3))
         row["final_status"] = final_status(row)
+        if row["final_status"] == "outreach_ready" and row.get("enterprise_signal") and row.get("internal_marketing_it"):
+            row["final_status"] = "enterprise_review"
         rows.append(row)
 
     rows.sort(key=lambda x: (x.get("final_status") == "outreach_ready", x.get("score", 0)), reverse=True)
@@ -83,6 +87,30 @@ def main():
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         w.writeheader(); w.writerows(rows)
+
+    queue_path = os.path.join(out_dir, "outreach_queue.csv")
+    queue_rows = []
+    for row in rows:
+        if row.get("final_status") != "outreach_ready":
+            continue
+        contact = contacts.find(row["url"])
+        if not contact.get("email"):
+            continue
+        company = row["url"].split("//")[-1].split("/")[0].replace("www.", "")
+        draft_row = {**row, **contact, "company": company}
+        subject, message = Personalizer.draft(draft_row)
+        queue_rows.append({
+            "company": company, "url": row["url"], "email": contact["email"],
+            "role": contact.get("role",""), "contact_confidence": contact.get("contact_confidence",""),
+            "business_score": row.get("business_score",""), "technical_score": row.get("technical_score",""),
+            "lighthouse_score": row.get("lighthouse_score",""), "lcp_ms": row.get("lcp_ms",""),
+            "tbt_ms": row.get("tbt_ms",""), "primary_issue": row.get("primary_issue",""),
+            "subject": subject, "message": message, "status": "ready",
+        })
+    if queue_rows:
+        with open(queue_path, "w", newline="", encoding="utf-8") as f:
+            qw = csv.DictWriter(f, fieldnames=list(queue_rows[0].keys()))
+            qw.writeheader(); qw.writerows(queue_rows)
 
     print(f"Analyzed {len(rows)} leads. No email was sent.")
     print(f"Results: {out_path}")

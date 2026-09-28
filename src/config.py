@@ -403,3 +403,16 @@ def get_post_bridge_config() -> dict:
             raw_config.get("auto_crosspost", defaults["auto_crosspost"])
         ),
     }
+
+
+def get_outreach_qualification_config() -> dict:
+    """Return V3 qualification settings with backwards-compatible defaults."""
+    with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
+        raw = json.load(file).get("outreach_qualification", {})
+    return {
+        "search_region": str(raw.get("search_region", "rs-sr")),
+        "dry_run": bool(raw.get("dry_run", False)),
+        "qualified_threshold": int(raw.get("qualified_threshold", 7)),
+        "priority_threshold": int(raw.get("priority_threshold", 10)),
+        "analyze_limit": int(raw.get("analyze_limit", 30)),
+    }

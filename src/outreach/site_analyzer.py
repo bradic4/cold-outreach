@@ -1,5 +1,5 @@
+import re
 import time
-from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -16,7 +16,13 @@ class SiteAnalyzer:
     def analyze(self, url: str) -> dict:
         started = time.perf_counter()
         try:
-            response = requests.get(url, headers=self.headers, timeout=self.timeout, verify=False, allow_redirects=True)
+            response = requests.get(
+                url,
+                headers=self.headers,
+                timeout=self.timeout,
+                verify=False,
+                allow_redirects=True,
+            )
             elapsed_ms = round((time.perf_counter() - started) * 1000)
             html = response.text if response.ok else ""
         except requests.RequestException as exc:
@@ -24,21 +30,29 @@ class SiteAnalyzer:
 
         lower = html.lower()
         tech = TechDetector.detect(html)
-        result = {
+        return {
             "url": response.url,
             "reachable": response.ok,
             "status_code": response.status_code,
             "response_ms": elapsed_ms,
             "html_bytes": len(response.content),
-            "scripts": len(re.findall(r"<script\\b", lower)),
-            "stylesheets": len(re.findall(r"<link\\b[^>]*rel=[\\\"']?stylesheet", lower)),
-            "images": len(re.findall(r"<img\\b", lower)),
-            "commercial_intent": any(x in lower for x in ("request a quote", "get a quote", "book a consultation", "contact us", "our services", "our projects")),
-            "is_agency": any(x in lower for x in ("web design agency", "digital agency", "seo agency", "marketing agency")),
+            "scripts": len(re.findall(r"<script\b", lower)),
+            "stylesheets": len(re.findall(r"<link\b[^>]*rel=[\"']?stylesheet", lower)),
+            "images": len(re.findall(r"<img\b", lower)),
+            "commercial_intent": any(
+                x in lower
+                for x in (
+                    "request a quote",
+                    "get a quote",
+                    "book a consultation",
+                    "contact us",
+                    "our services",
+                    "our projects",
+                )
+            ),
+            "is_agency": any(
+                x in lower
+                for x in ("web design agency", "digital agency", "seo agency", "marketing agency")
+            ),
             **tech,
         }
-        return result
-
-
-# local import kept here to make the module easy to unit test/mocking-friendly
-import re

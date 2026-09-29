@@ -108,6 +108,8 @@ class SiteAnalyzer:
 
         if candidates:
             candidates.sort(key=lambda x: x[1], reverse=True)
-            return candidates[0][0]
+            import html
+            return html.unescape(candidates[0][0])
 
-        return default_name
+        import html
+        return html.unescape(default_name)

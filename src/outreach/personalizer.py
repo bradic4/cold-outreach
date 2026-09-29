@@ -12,8 +12,11 @@ class Personalizer:
 
     @classmethod
     def draft(cls, row):
-        company = row.get("company_name") or row.get("company") or row.get("url", "").split("//")[-1].split("/")[0].replace("www.", "")
+        import html
+        company = html.unescape(row.get("company_name") or row.get("company") or row.get("url", "").split("//")[-1].split("/")[0].replace("www.", ""))
         first_name = (row.get("first_name") or "").strip()
+        if len(first_name) <= 1:
+            first_name = ""
         greeting = f"Hi {first_name}," if first_name else "Hi,"
         subject = f"Quick question about {company}"
         body = (f"{greeting}\n\nI came across {company} and noticed {cls.finding(row)}.\n\n"

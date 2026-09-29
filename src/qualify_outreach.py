@@ -112,7 +112,8 @@ def main():
         domain = row["url"].split("//")[-1].split("/")[0].replace("www.", "").strip().lower()
         if domain in sent_history:
             continue
-        company = row.get("company_name") or row["url"].split("//")[-1].split("/")[0].replace("www.", "")
+        import html
+        company = html.unescape(row.get("company_name") or row["url"].split("//")[-1].split("/")[0].replace("www.", ""))
         contact = contacts.find(row["url"], company_name=company)
         if not contact.get("email"):
             continue

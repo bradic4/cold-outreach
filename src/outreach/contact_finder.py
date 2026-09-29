@@ -6,7 +6,11 @@ import requests
 class ContactFinder:
     EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
     PAGES = ("", "/contact", "/contact-us", "/about", "/about-us", "/team", "/people")
-    BAD = ("example.com", "sentry.io", "wixpress.com", "wordpress.org", "elementor.com")
+    BAD = (
+        "example.com", "sentry.io", "wixpress.com", "wordpress.org", "elementor.com",
+        "mail.com", "email.com", "domain.com", "yourdomain.com", "site.com", "yoursite.com",
+        "example@", "test@", "user@", "username@", "yourname@"
+    )
     BAD_TLDS = {
         "png", "jpg", "jpeg", "webp", "svg", "gif", "bmp", "ico",
         "css", "js", "woff", "woff2", "ttf", "eot", "mp4", "mp3",
@@ -14,12 +18,26 @@ class ContactFinder:
     }
     ROLE_SCORES = {
         "director": 100, "owner": 100, "founder": 100, "partner": 95, "principal": 95,
-        "marketing": 75, "business": 70, "sales": 65, "office": 50, "info": 40, "hello": 40, "support": 20
+        "marketing": 75, "business": 70, "sales": 65, "office": 50, "info": 50, "hello": 50, "support": 20
     }
     GENERIC_LOCALS = {
-        "info", "office", "enquiries", "enquiry", "admin", "contact", "contacts",
-        "hello", "mail", "general", "reception", "london", "manchester", "birmingham",
-        "uk", "studio", "support", "help", "press", "media", "sales"
+        "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",
+        "admin", "contact", "contacts", "hello", "mail", "general", "reception",
+        "london", "manchester", "birmingham", "leeds", "bristol", "liverpool",
+        "uk", "studio", "support", "help", "press", "media", "sales",
+        "recruitment", "recruit", "careers", "jobs", "work", "hr",
+        "billing", "accounts", "finance", "legal", "privacy", "compliance",
+        "team", "feedback", "post", "bookings", "booking", "architecture",
+        "architects", "design", "projects"
+    }
+    PRIMARY_INBOXES = {
+        "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",
+        "hello", "contact", "contacts", "general", "reception", "studio"
+    }
+    LOW_PRIORITY_INBOXES = {
+        "recruitment", "recruit", "careers", "jobs", "work", "hr",
+        "billing", "accounts", "finance", "legal", "privacy", "compliance",
+        "support", "help", "press", "media"
     }
 
     def __init__(self, timeout=8):
@@ -39,8 +57,13 @@ class ContactFinder:
         score = 35
 
         if is_generic:
-            role = local if local in ("info", "office", "enquiries", "hello", "support") else "general"
-            score = 45 if role in ("office", "enquiries") else 40
+            role = local if local in ("info", "office", "enquiries", "inquiries", "hello", "support") else "general"
+            if local in self.PRIMARY_INBOXES:
+                score = 50 if role in ("office", "enquiries", "inquiries", "info", "hello") else 45
+            elif local in self.LOW_PRIORITY_INBOXES:
+                score = 20
+            else:
+                score = 35
             # Only elevate generic inbox if there's a strict direct label right next to email
             for key in ("director", "owner", "founder", "partner", "principal"):
                 if re.search(rf"\b{key}\b\s*[:\-–]?\s*{re.escape(email)}", text, re.I):
@@ -53,10 +76,13 @@ class ContactFinder:
         # Parse potential name from local part
         if "." in local:
             parts = local.split(".")
-            if len(parts) >= 2 and parts[0].isalpha() and parts[1].isalpha():
+            if len(parts) >= 2 and len(parts[0]) > 1 and parts[0].isalpha() and parts[1].isalpha():
                 first_name = parts[0].capitalize()
                 contact_name = f"{parts[0].capitalize()} {parts[1].capitalize()}"
-        elif len(local) > 2 and local.isalpha():
+            elif len(parts) >= 2 and len(parts[0]) == 1 and parts[1].isalpha():
+                first_name = ""
+                contact_name = f"{parts[0].upper()} {parts[1].capitalize()}"
+        elif len(local) > 2 and local.isalpha() and local not in self.GENERIC_LOCALS:
             first_name = local.capitalize()
             contact_name = local.capitalize()
 
@@ -126,14 +152,9 @@ class ContactFinder:
             suffixes = ("architects", "architecture", "design", "studio", "associates", "partners", "practice", "consulting")
             if len(words) >= 3 and words[-1].lower() in suffixes and words[-2].lower() not in suffixes:
                 first, last = words[0], words[1]
-                non_person = ("ck", "nada", "epr", "manchester", "london", "urban", "rural", "modern", "green", "city")
+                non_person = ("ck", "nada", "epr", "manchester", "london", "birmingham", "leeds", "bristol", "liverpool", "urban", "rural", "modern", "green", "city", "associated")
                 if first.lower() not in non_person and len(first) > 2:
                     best["first_name"] = first.capitalize()
                     best["name"] = f"{first.capitalize()} {last.capitalize()}"
-            elif len(words) == 2 and words[-1].lower() in suffixes:
-                first = words[0]
-                if len(first) > 2 and first.lower() not in ("ck", "nada", "epr", "city", "urban"):
-                    best["first_name"] = first.capitalize()
-                    best["name"] = first.capitalize()
 
         return best

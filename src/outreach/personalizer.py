@@ -11,11 +11,13 @@ class Personalizer:
         return "there appear to be a few mobile performance bottlenecks worth investigating"
 
     @classmethod
-    def draft(cls,row):
-        company=row.get("company") or row.get("url","").split("//")[-1].split("/")[0].replace("www.","")
-        subject=f"Quick question about {company}"
-        body=(f"Hi,\n\nI came across {company} and noticed {cls.finding(row)}.\n\n"
+    def draft(cls, row):
+        company = row.get("company_name") or row.get("company") or row.get("url", "").split("//")[-1].split("/")[0].replace("www.", "")
+        first_name = (row.get("first_name") or "").strip()
+        greeting = f"Hi {first_name}," if first_name else "Hi,"
+        subject = f"Quick question about {company}"
+        body = (f"{greeting}\n\nI came across {company} and noticed {cls.finding(row)}.\n\n"
               "I recently worked on a similar WordPress site where I reduced mobile page weight by 54% "
               "and improved LCP from 5.08s to 3.49s without adding another optimization plugin.\n\n"
               "I found a couple of things I'd investigate first. Happy to send them over if useful.\n\nIvan")
-        return subject,body
+        return subject, body

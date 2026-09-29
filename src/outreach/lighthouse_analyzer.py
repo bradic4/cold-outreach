@@ -17,6 +17,7 @@ class LighthouseAnalyzer:
         return bool(shutil.which("npx"))
 
     def analyze(self, url: str) -> dict:
+        npx_bin = shutil.which("npx") or "npx"
         if not self.available():
             return {"lighthouse_ok": False, "lighthouse_error": "npx not found"}
 
@@ -24,12 +25,23 @@ class LighthouseAnalyzer:
         os.close(fd)
         try:
             cmd = [
-                "npx", "--yes", "lighthouse", url,
+                npx_bin, "--yes", "lighthouse", url,
                 "--quiet", "--chrome-flags=--headless --no-sandbox",
                 "--only-categories=performance", "--output=json",
                 f"--output-path={path}",
             ]
-            subprocess.run(cmd, check=True, timeout=self.timeout, capture_output=True, text=True)
+            proc = subprocess.run(
+                cmd,
+                check=False,
+                timeout=self.timeout,
+                capture_output=True,
+                text=True,
+                shell=(os.name == "nt"),
+            )
+            if not os.path.exists(path) or os.path.getsize(path) == 0:
+                err_msg = (proc.stderr or "").strip() or f"exit status {proc.returncode}"
+                return {"lighthouse_ok": False, "lighthouse_error": err_msg}
+
             with open(path, "r", encoding="utf-8") as f:
                 report = json.load(f)
 

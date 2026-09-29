@@ -64,10 +64,11 @@ class Outreach:
 
         try:
             from ddgs import DDGS
-            for retry in range(3):
+            for retry in range(4):
                 try:
-                    with DDGS(timeout=15) as ddgs:
-                        results = list(ddgs.text(query, region=region, max_results=limit * 2))
+                    with DDGS(timeout=20) as ddgs:
+                        reg = region if retry < 2 else "wt-wt"
+                        results = list(ddgs.text(query, region=reg, max_results=max(limit * 2, 40)))
                         for r in results:
                             u = r.get("href", "").strip()
                             u_lower = u.lower()
@@ -79,7 +80,8 @@ class Outreach:
                         if urls:
                             break
                 except Exception as inner_e:
-                    time.sleep(1)
+                    warning(f"DDGS pretraga pokušaj {retry+1} nije uspeo: {inner_e}")
+                    time.sleep(2)
         except Exception as e:
             warning(f"Pretraga nije uspela: {e}")
 

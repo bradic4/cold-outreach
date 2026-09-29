@@ -106,11 +106,12 @@ def main():
             sent_history = {line.strip().lower() for line in hf if line.strip()}
 
     queue_rows = []
+    seen_domains = set()
     for row in rows:
         if row.get("final_status") != "outreach_ready":
             continue
         domain = row["url"].split("//")[-1].split("/")[0].replace("www.", "").strip().lower()
-        if domain in sent_history:
+        if domain in sent_history or domain in seen_domains:
             continue
         import html
         company = html.unescape(row.get("company_name") or row["url"].split("//")[-1].split("/")[0].replace("www.", ""))
@@ -119,6 +120,7 @@ def main():
             continue
         if contact["email"].strip().lower() in sent_history:
             continue
+        seen_domains.add(domain)
         draft_row = {**row, **contact, "company": company, "company_name": company}
         subject, message = Personalizer.draft(draft_row)
         queue_rows.append({

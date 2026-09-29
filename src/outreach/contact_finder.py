@@ -23,16 +23,24 @@ class ContactFinder:
     GENERIC_LOCALS = {
         "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",
         "admin", "contact", "contacts", "hello", "mail", "general", "reception",
+        "welcome", "frontdesk", "desk", "central", "inbox", "connect", "hq",
         "london", "manchester", "birmingham", "leeds", "bristol", "liverpool",
+        "aberdeen", "edinburgh", "glasgow", "cardiff", "belfast", "newcastle",
+        "sheffield", "nottingham", "oxford", "cambridge", "york", "bath",
+        "norwich", "exeter", "southampton", "plymouth", "derby", "leicester",
+        "coventry", "hull", "bradford", "stoke", "wolverhampton", "swansea",
+        "dundee", "inverness", "reading", "brighton", "bournemouth", "luton",
+        "northampton", "miltonkeynes", "swindon", "westyorkshire", "yorkshire",
         "uk", "studio", "support", "help", "press", "media", "sales",
         "recruitment", "recruit", "careers", "jobs", "work", "hr",
         "billing", "accounts", "finance", "legal", "privacy", "compliance",
         "team", "feedback", "post", "bookings", "booking", "architecture",
-        "architects", "design", "projects"
+        "architects", "design", "projects", "commercial", "residential",
+        "consult", "consulting", "customerservice", "customer", "directors", "partners", "management"
     }
     PRIMARY_INBOXES = {
         "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",
-        "hello", "contact", "contacts", "general", "reception", "studio"
+        "hello", "welcome", "contact", "contacts", "general", "reception", "studio"
     }
     LOW_PRIORITY_INBOXES = {
         "recruitment", "recruit", "careers", "jobs", "work", "hr",
@@ -57,9 +65,9 @@ class ContactFinder:
         score = 35
 
         if is_generic:
-            role = local if local in ("info", "office", "enquiries", "inquiries", "hello", "support") else "general"
+            role = local if local in ("info", "office", "enquiries", "inquiries", "hello", "welcome", "support") else "general"
             if local in self.PRIMARY_INBOXES:
-                score = 50 if role in ("office", "enquiries", "inquiries", "info", "hello") else 45
+                score = 50 if role in ("office", "enquiries", "inquiries", "info", "hello", "welcome") else 45
             elif local in self.LOW_PRIORITY_INBOXES:
                 score = 20
             else:
@@ -103,6 +111,11 @@ class ContactFinder:
                 elif key in around and points >= 90:
                     score, role = points, key
                     break
+
+        if first_name and first_name.lower() in self.GENERIC_LOCALS:
+            first_name = ""
+        if contact_name and contact_name.lower() in self.GENERIC_LOCALS:
+            contact_name = ""
 
         return score, role, contact_name, first_name
 

@@ -65,12 +65,27 @@ class SiteAnalyzer:
         title = re.sub(r"\s+", " ", title_match.group(1)).strip() if title_match else ""
 
         candidates = []
+        generic_descriptors = {
+            "architecture office", "architectural office", "architecture practice",
+            "architectural practice", "architectural services", "architecture services",
+            "chartered architects", "riba chartered practice", "riba chartered architects",
+            "award winning architects", "commercial architects", "residential architects",
+            "interior design", "landscape architects", "architecture studio", "design studio",
+            "architects and designers", "architectural designers"
+        }
+        uk_cities = {
+            "london", "manchester", "birmingham", "leeds", "bristol", "liverpool",
+            "aberdeen", "edinburgh", "glasgow", "cardiff", "belfast", "newcastle",
+            "sheffield", "nottingham", "oxford", "cambridge", "york", "bath"
+        }
         if title:
             chunks = [c.strip() for c in re.split(r"[\|\—\–\-\•\:\,]", title) if c.strip()]
             bad_words = ("home", "welcome", "about", "contact", "official site", "residential")
             for chunk in chunks:
-                c_lower = chunk.lower()
+                c_lower = chunk.lower().strip()
                 if any(b in c_lower for b in bad_words) or len(chunk) < 3 or len(chunk) > 45:
+                    continue
+                if c_lower in generic_descriptors:
                     continue
                 c_clean = re.sub(r"[^a-z0-9]", "", c_lower)
                 score = 1.0
@@ -78,10 +93,18 @@ class SiteAnalyzer:
                     score += 10.0
                 elif c_clean in domain_clean or domain_clean in c_clean:
                     score += 5.0
+
+                # Check for acronym match (e.g. Halliday Fraser Munro -> hfm)
+                words = [w for w in re.split(r"\s+", c_lower) if w]
+                initials = "".join(w[0] for w in words)
+                if len(domain_clean) >= 3 and initials == domain_clean:
+                    score += 8.0
+
                 if any(k in c_lower for k in ("architects", "architecture", "studio", "design", "practice")):
                     score += 2.0
-                if c_lower in ("architects manchester", "manchester architects", "architects in manchester", "architect in manchester"):
-                    score -= 4.0
+                for city in uk_cities:
+                    if c_lower in (city, f"architects {city}", f"{city} architects", f"architects in {city}", f"architecture in {city}"):
+                        score -= 5.0
                 candidates.append((chunk, score))
 
         ld_matches = re.findall(r'<script\s+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', html, re.I | re.S)
@@ -89,7 +112,7 @@ class SiteAnalyzer:
             nm = re.search(r'"name"\s*:\s*"([^"]+)"', ld)
             if nm:
                 name = nm.group(1).strip()
-                if 2 < len(name) < 45 and not any(x in name.lower() for x in ("home", "welcome")):
+                if 2 < len(name) < 45 and not any(x in name.lower() for x in ("home", "welcome")) and name.lower() not in generic_descriptors:
                     score = 3.0
                     if re.sub(r"[^a-z0-9]", "", name.lower()) == domain_clean:
                         score += 10.0

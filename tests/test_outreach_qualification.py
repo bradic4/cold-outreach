@@ -101,6 +101,23 @@ def test_image_asset_not_treated_as_email():
     assert len(valid) == 0
 
 
+def test_generic_local_welcome_and_cities_not_parsed_as_names():
+    from src.outreach.contact_finder import ContactFinder
+    cf = ContactFinder()
+    for local in ("welcome", "aberdeen", "birmingham", "leeds", "info"):
+        score, role, name, first_name = cf._extract_name_and_role(f"{local}@example.co.uk", "some text")
+        assert first_name == "", f"first_name should be empty for {local}, got {first_name}"
+        assert name == "", f"name should be empty for {local}, got {name}"
+
+
+def test_site_analyzer_extracts_acronym_and_filters_generic_descriptors():
+    from src.outreach.site_analyzer import SiteAnalyzer
+    html = "<title>Architecture Office | Leeds | Halliday Fraser Munro</title>"
+    url = "https://www.hfm.co.uk/contact/leeds/"
+    extracted = SiteAnalyzer.extract_company_name(html, url)
+    assert extracted == "Halliday Fraser Munro", f"Expected Halliday Fraser Munro, got {extracted}"
+
+
 if __name__ == "__main__":
     tests = [
         test_detects_stack,
@@ -116,6 +133,8 @@ if __name__ == "__main__":
         test_personalizer_first_name_and_company_name,
         test_site_analyzer_extract_company_name,
         test_image_asset_not_treated_as_email,
+        test_generic_local_welcome_and_cities_not_parsed_as_names,
+        test_site_analyzer_extracts_acronym_and_filters_generic_descriptors,
     ]
     for t in tests:
         t()

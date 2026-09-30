@@ -121,6 +121,20 @@ def test_site_analyzer_extracts_acronym_and_filters_generic_descriptors():
     assert extracted == "Halliday Fraser Munro", f"Expected Halliday Fraser Munro, got {extracted}"
 
 
+def test_initial_surname_not_parsed_as_first_name():
+    from src.outreach.contact_finder import ContactFinder
+    cf = ContactFinder()
+    for local in ("mmchugh", "mchugh", "ssmith", "macdonald"):
+        score, role, name, first_name = cf._extract_name_and_role(f"{local}@example.co.uk", "some text")
+        assert first_name == "", f"first_name should be empty for {local}, got {first_name}"
+
+
+def test_directory_subdomain_rejected():
+    from src.outreach.result_classifier import ResultClassifier
+    kind, _ = ResultClassifier.classify("https://directory.liverpoolecho.co.uk/search/liverpool/architects")
+    assert kind == "directory"
+
+
 if __name__ == "__main__":
     tests = [
         test_detects_stack,
@@ -138,6 +152,8 @@ if __name__ == "__main__":
         test_image_asset_not_treated_as_email,
         test_generic_local_welcome_and_cities_not_parsed_as_names,
         test_site_analyzer_extracts_acronym_and_filters_generic_descriptors,
+        test_initial_surname_not_parsed_as_first_name,
+        test_directory_subdomain_rejected,
     ]
     for t in tests:
         t()

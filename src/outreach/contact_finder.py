@@ -91,8 +91,14 @@ class ContactFinder:
                 first_name = ""
                 contact_name = f"{parts[0].upper()} {parts[1].capitalize()}"
         elif len(local) > 2 and local.isalpha() and local not in self.GENERIC_LOCALS:
-            first_name = local.capitalize()
-            contact_name = local.capitalize()
+            is_initial_surname = (
+                (len(local) >= 4 and local[0] == local[1]) or
+                local.startswith(("mc", "mac")) or
+                bool(re.search(r"^[a-z]mc[a-z]+$", local))
+            )
+            if not is_initial_surname:
+                first_name = local.capitalize()
+                contact_name = local.capitalize()
 
         # Look for explicit name and role in nearby text
         name_match = re.search(r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+))\b\s*(?:[,|\-•]\s*)?\b(Director|Founder|Owner|Partner|Principal|Architect)\b", text)

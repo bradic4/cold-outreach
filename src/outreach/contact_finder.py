@@ -37,7 +37,8 @@ class ContactFinder:
         "team", "feedback", "post", "bookings", "booking", "architecture",
         "architects", "design", "projects", "commercial", "residential",
         "consult", "consulting", "customerservice", "customer", "directors", "partners", "management",
-        "email", "home", "web", "online", "main"
+        "email", "home", "web", "online", "main", "solicitors", "solicitor", "law", "lawyers", "lawyer",
+        "claims", "cases", "conveyancing", "litigation"
     }
     PRIMARY_INBOXES = {
         "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",
@@ -191,14 +192,15 @@ class ContactFinder:
         # Eponymous company name fallback if first_name not yet set
         if not best.get("first_name") and company_name:
             words = [w for w in company_name.split() if w.isalpha()]
-            suffixes = ("architects", "architecture", "design", "studio", "associates", "partners", "practice", "consulting")
+            suffixes = ("architects", "architecture", "design", "studio", "associates", "partners", "practice", "consulting", "solicitors", "law", "legal", "lawyers")
             if len(words) >= 3 and words[-1].lower() in suffixes and words[-2].lower() not in suffixes:
                 first, last = words[0], words[1]
                 non_person = (
                     "ck", "nada", "epr", "gcp", "hfm", "manchester", "london", "birmingham",
                     "leeds", "bristol", "liverpool", "urban", "rural", "modern", "green", "city",
                     "associated", "chartered", "registered", "certified", "award", "national",
-                    "regional", "contemporary", "bespoke", "creative", "boutique", "innovative"
+                    "regional", "contemporary", "bespoke", "creative", "boutique", "innovative",
+                    "legal", "commercial", "corporate", "family", "criminal", "premier", "direct"
                 )
                 has_vowel = any(c in first.lower() for c in "aeiouy")
                 if has_vowel and first.lower() not in non_person and last.lower() not in non_person and len(first) > 2:

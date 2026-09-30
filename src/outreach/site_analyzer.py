@@ -71,7 +71,10 @@ class SiteAnalyzer:
             "chartered architects", "riba chartered practice", "riba chartered architects",
             "award winning architects", "commercial architects", "residential architects",
             "interior design", "landscape architects", "architecture studio", "design studio",
-            "architects and designers", "architectural designers"
+            "architects and designers", "architectural designers",
+            "solicitors", "law firm", "legal services", "lawyers", "law practice",
+            "solicitors and lawyers", "leading solicitors", "expert solicitors", "legal practice",
+            "solicitors in", "law firm in", "lawyers in"
         }
         uk_cities = {
             "london", "manchester", "birmingham", "leeds", "bristol", "liverpool",
@@ -85,7 +88,12 @@ class SiteAnalyzer:
                 c_lower = chunk.lower().strip()
                 if any(b in c_lower for b in bad_words) or len(chunk) < 3 or len(chunk) > 45:
                     continue
-                if c_lower in generic_descriptors or any(c_lower.startswith(d) for d in ("award winning", "chartered architects in", "architectural services in", "architecture practice in", "best architects in")):
+                if c_lower in generic_descriptors or any(c_lower.startswith(d) for d in (
+                    "award winning", "chartered architects in", "architectural services in",
+                    "architecture practice in", "best architects in", "solicitors in",
+                    "law firm in", "lawyers in", "leading solicitors in", "expert solicitors in",
+                    "best solicitors in"
+                )):
                     continue
                 c_clean = re.sub(r"[^a-z0-9]", "", c_lower)
                 score = 1.0
@@ -100,10 +108,10 @@ class SiteAnalyzer:
                 if len(domain_clean) >= 3 and initials == domain_clean:
                     score += 8.0
 
-                if any(k in c_lower for k in ("architects", "architecture", "studio", "design", "practice")):
+                if any(k in c_lower for k in ("architects", "architecture", "studio", "design", "practice", "solicitors", "law", "legal", "lawyers")):
                     score += 2.0
                 for city in uk_cities:
-                    if c_lower in (city, f"architects {city}", f"{city} architects", f"architects in {city}", f"architecture in {city}"):
+                    if c_lower in (city, f"architects {city}", f"{city} architects", f"architects in {city}", f"architecture in {city}", f"solicitors {city}", f"{city} solicitors", f"solicitors in {city}", f"law firm {city}", f"{city} law firm"):
                         score -= 5.0
                 candidates.append((chunk, score))
 

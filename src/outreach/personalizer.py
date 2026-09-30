@@ -25,13 +25,19 @@ class Personalizer:
         if len(first_name) <= 1:
             first_name = ""
 
+        target = f"{company} {row.get('url', '')}".lower()
+        if any(k in target for k in ("architect", "architecture")):
+            industry = "architecture studio"
+        else:
+            industry = "law firm"
+
         greeting = f"Hi {first_name}," if first_name else "Hi,"
         subject = f"{company} site speed"
         body = (
             f"{greeting}\n\n"
             f"I had a look at the {company} website and found a few things that may be making it "
             "slower than it needs to be, especially on mobile.\n\n"
-            "I recently worked on a similar issue for another architecture studio and made their "
+            f"I recently worked on a similar issue for another {industry} and made their "
             "site noticeably faster without changing the design or adding more plugins.\n\n"
             "I noted what I'd look at first on your site too. Want me to send it over?\n\n"
             "Ivan"

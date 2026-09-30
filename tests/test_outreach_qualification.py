@@ -82,6 +82,20 @@ def test_personalizer_first_name_and_company_name():
     assert body.startswith("Hi Andrew,\n\nI had a look at the Andrew Wallace Architects website")
     assert "slower than it needs to be, especially on mobile" in body
     assert "without changing the design or adding more plugins" in body
+    assert "another architecture studio" in body
+    assert body.endswith("Want me to send it over?\n\nIvan")
+
+
+def test_personalizer_law_firm():
+    from src.outreach.personalizer import Personalizer
+    sub, body = Personalizer.draft({
+        "company_name": "Stephensons Solicitors",
+        "first_name": "Sean",
+        "url": "https://www.stephensons.co.uk",
+    })
+    assert sub == "Stephensons Solicitors site speed"
+    assert body.startswith("Hi Sean,\n\nI had a look at the Stephensons Solicitors website")
+    assert "for another law firm" in body
     assert body.endswith("Want me to send it over?\n\nIvan")
 
 

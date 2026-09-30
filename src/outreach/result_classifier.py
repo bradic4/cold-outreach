@@ -9,11 +9,15 @@ class ResultClassifier:
         "instagram.com", "pinterest.com", "wikipedia.org", "grokipedia.com",
         "find-my-architect.com", "procore.com", "bark.com", "mybuilder.com",
         "threebestrated.co.uk", "planningarchitectural.co.uk",
+        "lawsociety.org.uk", "reviewsolicitors.co.uk", "legal500.com",
+        "chambers.com", "solicitor.info", "goodlawfirms.co.uk",
+        "local-solicitors.co.uk", "thelawpages.com", "solicitors-barristers.co.uk",
     }
-    EDITORIAL_DOMAINS = {"e-architect.com", "re-thinkingthefuture.com"}
+    EDITORIAL_DOMAINS = {"e-architect.com", "re-thinkingthefuture.com", "lawgazette.co.uk"}
     DIRECTORY_PATH_PATTERNS = (
         r"/professionals?/", r"/directory(?:/|$)", r"/best-", r"/top-",
-        r"/architects?-in-", r"/find-", r"/probr\d", r"^/search/",
+        r"/architects?-in-", r"/solicitors?-in-", r"/law-firms?-in-",
+        r"/find-", r"/probr\d", r"^/search/",
     )
 
     @classmethod

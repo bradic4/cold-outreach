@@ -97,8 +97,29 @@ class ContactFinder:
                 bool(re.search(r"^[a-z]mc[a-z]+$", local))
             )
             if not is_initial_surname:
-                first_name = local.capitalize()
-                contact_name = local.capitalize()
+                matched_prefix = False
+                common_firsts = (
+                    "ben", "john", "paul", "david", "mark", "alex", "sarah", "emma", "anna",
+                    "tom", "chris", "james", "dan", "sam", "rob", "mike", "nick", "luke",
+                    "richard", "adam", "simon", "tim", "steve", "matthew", "peter", "george",
+                    "edward", "william", "michael", "andrew", "ian", "neil", "graham", "colin",
+                    "brian", "alan", "kevin", "gary", "stephen", "philip", "martin", "anthony",
+                    "judy", "lisa", "claire", "kate", "helen", "rachel", "lucy", "sophie"
+                )
+                for fn in common_firsts:
+                    if local.startswith(fn) and len(local) - len(fn) >= 3:
+                        first_name = fn.capitalize()
+                        last_name = local[len(fn):].capitalize()
+                        contact_name = f"{first_name} {last_name}"
+                        matched_prefix = True
+                        break
+                if not matched_prefix:
+                    if len(local) < 10:
+                        first_name = local.capitalize()
+                        contact_name = local.capitalize()
+                    else:
+                        first_name = ""
+                        contact_name = ""
 
         # Look for explicit name and role in nearby text
         name_match = re.search(r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+))\b\s*(?:[,|\-•]\s*)?\b(Director|Founder|Owner|Partner|Principal|Architect)\b", text)
@@ -171,8 +192,14 @@ class ContactFinder:
             suffixes = ("architects", "architecture", "design", "studio", "associates", "partners", "practice", "consulting")
             if len(words) >= 3 and words[-1].lower() in suffixes and words[-2].lower() not in suffixes:
                 first, last = words[0], words[1]
-                non_person = ("ck", "nada", "epr", "manchester", "london", "birmingham", "leeds", "bristol", "liverpool", "urban", "rural", "modern", "green", "city", "associated")
-                if first.lower() not in non_person and len(first) > 2:
+                non_person = (
+                    "ck", "nada", "epr", "gcp", "hfm", "manchester", "london", "birmingham",
+                    "leeds", "bristol", "liverpool", "urban", "rural", "modern", "green", "city",
+                    "associated", "chartered", "registered", "certified", "award", "national",
+                    "regional", "contemporary", "bespoke", "creative", "boutique", "innovative"
+                )
+                has_vowel = any(c in first.lower() for c in "aeiouy")
+                if has_vowel and first.lower() not in non_person and last.lower() not in non_person and len(first) > 2:
                     best["first_name"] = first.capitalize()
                     best["name"] = f"{first.capitalize()} {last.capitalize()}"
 

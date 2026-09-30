@@ -85,7 +85,7 @@ class SiteAnalyzer:
                 c_lower = chunk.lower().strip()
                 if any(b in c_lower for b in bad_words) or len(chunk) < 3 or len(chunk) > 45:
                     continue
-                if c_lower in generic_descriptors:
+                if c_lower in generic_descriptors or any(c_lower.startswith(d) for d in ("award winning", "chartered architects in", "architectural services in", "architecture practice in", "best architects in")):
                     continue
                 c_clean = re.sub(r"[^a-z0-9]", "", c_lower)
                 score = 1.0

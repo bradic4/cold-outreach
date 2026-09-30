@@ -135,6 +135,31 @@ def test_directory_subdomain_rejected():
     assert kind == "directory"
 
 
+def test_compound_first_name_prefix_matching():
+    from src.outreach.contact_finder import ContactFinder
+    cf = ContactFinder()
+    score, role, name, first_name = cf._extract_name_and_role("benrichards@example.co.uk", "some text")
+    assert first_name == "Ben"
+    assert name == "Ben Richards"
+
+
+def test_eponymous_acronym_and_adjective_rejected():
+    from src.outreach.contact_finder import ContactFinder
+    cf = ContactFinder()
+    contact = {"email": "mail@example.co.uk", "role": "", "name": "", "first_name": ""}
+    # Simulate find() eponymous post-processing check
+    words = [w for w in "gcp Chartered Architects".split() if w.isalpha()]
+    first, last = words[0], words[1]
+    non_person = (
+        "ck", "nada", "epr", "gcp", "hfm", "manchester", "london", "birmingham",
+        "leeds", "bristol", "liverpool", "urban", "rural", "modern", "green", "city",
+        "associated", "chartered", "registered", "certified", "award", "national",
+        "regional", "contemporary", "bespoke", "creative", "boutique", "innovative"
+    )
+    has_vowel = any(c in first.lower() for c in "aeiouy")
+    assert not has_vowel or first.lower() in non_person or last.lower() in non_person
+
+
 if __name__ == "__main__":
     tests = [
         test_detects_stack,
@@ -154,6 +179,8 @@ if __name__ == "__main__":
         test_site_analyzer_extracts_acronym_and_filters_generic_descriptors,
         test_initial_surname_not_parsed_as_first_name,
         test_directory_subdomain_rejected,
+        test_compound_first_name_prefix_matching,
+        test_eponymous_acronym_and_adjective_rejected,
     ]
     for t in tests:
         t()

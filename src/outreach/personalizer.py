@@ -1,26 +1,39 @@
 class Personalizer:
     @staticmethod
     def finding(row):
-        lcp=int(float(row.get("lcp_ms") or 0)); tbt=int(float(row.get("tbt_ms") or 0))
-        if lcp>=4000 and tbt>=1000:
-            return "the mobile site is doing a lot of work before the main content becomes responsive"
-        if tbt>=1000:
-            return "the mobile site is spending a significant amount of time processing JavaScript"
-        if lcp>=4000:
-            return "the main content on mobile is appearing quite late"
-        return "there appear to be a few mobile performance bottlenecks worth investigating"
+        """Keep measured performance evidence available for review/follow-up copy."""
+        lcp = int(float(row.get("lcp_ms") or 0))
+        tbt = int(float(row.get("tbt_ms") or 0))
+        if lcp >= 4000 and tbt >= 1000:
+            return "the site is slower than it needs to be, especially on mobile"
+        if tbt >= 1000:
+            return "the site appears to be doing more work than it needs to, especially on mobile"
+        if lcp >= 4000:
+            return "the site is taking longer than it should to show its main content, especially on mobile"
+        return "there are a few things that may be slowing the site down, especially on mobile"
 
     @classmethod
     def draft(cls, row):
         import html
-        company = html.unescape(row.get("company_name") or row.get("company") or row.get("url", "").split("//")[-1].split("/")[0].replace("www.", ""))
+
+        company = html.unescape(
+            row.get("company_name")
+            or row.get("company")
+            or row.get("url", "").split("//")[-1].split("/")[0].replace("www.", "")
+        )
         first_name = (row.get("first_name") or "").strip()
         if len(first_name) <= 1:
             first_name = ""
+
         greeting = f"Hi {first_name}," if first_name else "Hi,"
-        subject = f"Quick question about {company}"
-        body = (f"{greeting}\n\nI came across {company} and noticed {cls.finding(row)}.\n\n"
-              "I recently worked on a similar WordPress site where I reduced mobile page weight by 54% "
-              "and improved LCP from 5.08s to 3.49s without adding another optimization plugin.\n\n"
-              "I found a couple of things I'd investigate first. Happy to send them over if useful.\n\nIvan")
+        subject = f"{company} site speed"
+        body = (
+            f"{greeting}\n\n"
+            f"I had a look at the {company} website and found a few things that may be making it "
+            "slower than it needs to be, especially on mobile.\n\n"
+            "I recently worked on a similar issue for another architecture studio and made their "
+            "site noticeably faster without changing the design or adding more plugins.\n\n"
+            "I noted what I'd look at first on your site too. Want me to send it over?\n\n"
+            "Ivan"
+        )
         return subject, body

@@ -38,7 +38,7 @@ class ContactFinder:
         "architects", "design", "projects", "commercial", "residential",
         "consult", "consulting", "customerservice", "customer", "directors", "partners", "management",
         "email", "home", "web", "online", "main", "solicitors", "solicitor", "law", "lawyers", "lawyer",
-        "claims", "cases", "conveyancing", "litigation", "solihull", "maidstone", "leatherhead"
+        "claims", "cases", "conveyancing", "litigation", "solihull", "maidstone", "leatherhead", "colmore"
     }
     PRIMARY_INBOXES = {
         "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",

@@ -160,6 +160,22 @@ def test_eponymous_acronym_and_adjective_rejected():
     assert not has_vowel or first.lower() in non_person or last.lower() in non_person
 
 
+def test_generic_local_email_and_home_not_parsed_as_names():
+    from src.outreach.contact_finder import ContactFinder
+    cf = ContactFinder()
+    for local in ("email", "home", "web", "online"):
+        score, role, name, first_name = cf._extract_name_and_role(f"{local}@example.co.uk", "director of architecture")
+        assert first_name == "", f"first_name should be empty for {local}, got {first_name}"
+
+
+def test_slash_delimiter_in_title_extracts_clean_company_name():
+    from src.outreach.site_analyzer import SiteAnalyzer
+    html = "<title>Spacestudio / architects and designers</title>"
+    url = "https://www.spacestudio.uk/"
+    extracted = SiteAnalyzer.extract_company_name(html, url)
+    assert extracted == "Spacestudio", f"Expected Spacestudio, got {extracted}"
+
+
 if __name__ == "__main__":
     tests = [
         test_detects_stack,
@@ -181,6 +197,8 @@ if __name__ == "__main__":
         test_directory_subdomain_rejected,
         test_compound_first_name_prefix_matching,
         test_eponymous_acronym_and_adjective_rejected,
+        test_generic_local_email_and_home_not_parsed_as_names,
+        test_slash_delimiter_in_title_extracts_clean_company_name,
     ]
     for t in tests:
         t()

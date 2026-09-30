@@ -36,11 +36,13 @@ class ContactFinder:
         "billing", "accounts", "finance", "legal", "privacy", "compliance",
         "team", "feedback", "post", "bookings", "booking", "architecture",
         "architects", "design", "projects", "commercial", "residential",
-        "consult", "consulting", "customerservice", "customer", "directors", "partners", "management"
+        "consult", "consulting", "customerservice", "customer", "directors", "partners", "management",
+        "email", "home", "web", "online", "main"
     }
     PRIMARY_INBOXES = {
         "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",
-        "hello", "welcome", "contact", "contacts", "general", "reception", "studio"
+        "hello", "welcome", "contact", "contacts", "general", "reception", "studio",
+        "email", "home", "mail"
     }
     LOW_PRIORITY_INBOXES = {
         "recruitment", "recruit", "careers", "jobs", "work", "hr",

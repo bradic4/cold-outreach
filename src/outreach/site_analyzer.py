@@ -79,7 +79,7 @@ class SiteAnalyzer:
             "sheffield", "nottingham", "oxford", "cambridge", "york", "bath"
         }
         if title:
-            chunks = [c.strip() for c in re.split(r"[\|\—\–\-\•\:\,]", title) if c.strip()]
+            chunks = [c.strip() for c in re.split(r"[\|\—\–\-\•\:\,\/\\]", title) if c.strip()]
             bad_words = ("home", "welcome", "about", "contact", "official site", "residential")
             for chunk in chunks:
                 c_lower = chunk.lower().strip()

@@ -172,20 +172,24 @@ class Outreach:
             import dns.resolver
             resolver = dns.resolver.Resolver()
             resolver.nameservers = ['8.8.8.8', '1.1.1.1']
-            resolver.timeout = 3
-            resolver.lifetime = 3
-            answers = resolver.resolve(domain, "MX")
-            return len(answers) > 0
-        except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers):
-            return False
-        except Exception:
+            resolver.timeout = 5
+            resolver.lifetime = 5
             try:
-                import socket
-                domain = email.split("@")[1].strip().lower()
-                socket.gethostbyname(domain)
-                return True
-            except Exception:
+                # Try TCP first to avoid UDP timeouts and home router proxy drops
+                answers = resolver.resolve(domain, "MX", tcp=True)
+                return len(answers) > 0
+            except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
                 return False
+            except Exception:
+                try:
+                    answers = resolver.resolve(domain, "MX", tcp=False)
+                    return len(answers) > 0
+                except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
+                    return False
+                except Exception:
+                    return "." in domain and len(domain) > 4
+        except Exception:
+            return False
 
     def start(self) -> None:
         """

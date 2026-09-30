@@ -46,7 +46,7 @@ def test_lighthouse_gate_rejects_fast_site():
 def test_personalizer_uses_measured_performance():
     from src.outreach.personalizer import Personalizer
     text=Personalizer.finding({"lcp_ms":5500,"tbt_ms":2000})
-    assert "responsive" in text
+    assert "especially on mobile" in text
 
 
 def test_contact_role_score_prefers_director():

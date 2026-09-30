@@ -35,7 +35,10 @@ class Outreach:
         """
         Search DuckDuckGo API for business websites matching the query.
         """
-        info(f"Tražim lokalne biznise i sajtove na web-u za: '{query}'...")
+        effective_query = query
+        if region == "uk-en" and not re.search(r"\b(uk|england|scotland|wales|britain)\b", query, re.I):
+            effective_query = f"{query} UK"
+        info(f"Tražim lokalne biznise i sajtove na web-u za: '{effective_query}'...")
         urls = []
         excluded = [
             "facebook.com", "instagram.com", "youtube.com", "linkedin.com", "tiktok.com",
@@ -64,10 +67,11 @@ class Outreach:
 
         try:
             from ddgs import DDGS
-            for retry in range(3):
+            for retry in range(4):
                 try:
-                    with DDGS(timeout=15) as ddgs:
-                        results = list(ddgs.text(query, region=region, max_results=limit * 2))
+                    with DDGS(timeout=20) as ddgs:
+                        reg = region if retry < 2 else "wt-wt"
+                        results = list(ddgs.text(effective_query, region=reg, max_results=max(limit * 2, 40)))
                         for r in results:
                             u = r.get("href", "").strip()
                             u_lower = u.lower()
@@ -79,7 +83,8 @@ class Outreach:
                         if urls:
                             break
                 except Exception as inner_e:
-                    time.sleep(1)
+                    warning(f"DDGS pretraga pokušaj {retry+1} nije uspeo: {inner_e}")
+                    time.sleep(2)
         except Exception as e:
             warning(f"Pretraga nije uspela: {e}")
 

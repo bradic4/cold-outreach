@@ -1,0 +1,67 @@
+[
+  {
+    "name": "Stomatoloska Ordinacija Cvejanovic",
+    "url": "https://ordinacijacvejanovic.com/",
+    "niche": "dental_tourism",
+    "email": "bootstrap@5.1.2",
+    "all_emails": [
+      "bootstrap@5.1.2"
+    ]
+  },
+  {
+    "name": "Dental Implant Centar",
+    "url": "https://www.dentalimplant.rs/",
+    "niche": "dental_tourism",
+    "email": "info@dentalimplant.rs",
+    "all_emails": [
+      "info@dentalimplant.rs"
+    ]
+  },
+  {
+    "name": "Alfa Plam Vranje",
+    "url": "https://www.alfaplam.rs/",
+    "niche": "hvac",
+    "email": "prodaja@alfaplam.rs",
+    "all_emails": [
+      "prodaja@alfaplam.rs",
+      "marketing@alfaplam.rs",
+      "nabavka@alfaplam.rs"
+    ]
+  },
+  {
+    "name": "Transfera Logistika",
+    "url": "https://transfera.com/",
+    "niche": "logistics",
+    "email": "office@transfera.com",
+    "all_emails": [
+      "ecommerce.support@transfera.com",
+      "e-com@transfera.com",
+      "office@transfera.com"
+    ]
+  },
+  {
+    "name": "Milsped Grupa",
+    "url": "https://www.milsped.com/",
+    "niche": "logistics",
+    "email": "stefan.stamatovic@milsped.com",
+    "all_emails": [
+      "stefan.stamatovic@milsped.com",
+      "air.us@milsped.com",
+      "security@milsped.com",
+      "stipendije@milsped.com",
+      "sea.us@milsped.com",
+      "zaposlenje@milsped.com",
+      "office.us@milsped.com",
+      "mas.us@milsped.com"
+    ]
+  },
+  {
+    "name": "Eurocons Group",
+    "url": "https://eurocons.rs/",
+    "niche": "industrial_engineering",
+    "email": "info@eurocons.rs",
+    "all_emails": [
+      "info@eurocons.rs"
+    ]
+  }
+]

@@ -32,6 +32,7 @@ class SiteAnalyzer:
         tech = TechDetector.detect(html)
         return {
             "url": response.url,
+            "company_name": self.extract_company_name(html, response.url),
             "reachable": response.ok,
             "status_code": response.status_code,
             "response_ms": elapsed_ms,
@@ -51,3 +52,87 @@ class SiteAnalyzer:
             ),
             **tech,
         }
+
+    @staticmethod
+    def extract_company_name(html: str, url: str) -> str:
+        domain_stem = url.split("//")[-1].split("/")[0].replace("www.", "").split(".")[0]
+        domain_clean = re.sub(r"[^a-z0-9]", "", domain_stem.lower())
+        default_name = domain_stem.replace("-", " ").title()
+        if not html:
+            return default_name
+
+        title_match = re.search(r"<title[^>]*>(.*?)</title>", html, re.I | re.S)
+        title = re.sub(r"\s+", " ", title_match.group(1)).strip() if title_match else ""
+
+        candidates = []
+        generic_descriptors = {
+            "architecture office", "architectural office", "architecture practice",
+            "architectural practice", "architectural services", "architecture services",
+            "chartered architects", "riba chartered practice", "riba chartered architects",
+            "award winning architects", "commercial architects", "residential architects",
+            "interior design", "landscape architects", "architecture studio", "design studio",
+            "architects and designers", "architectural designers"
+        }
+        uk_cities = {
+            "london", "manchester", "birmingham", "leeds", "bristol", "liverpool",
+            "aberdeen", "edinburgh", "glasgow", "cardiff", "belfast", "newcastle",
+            "sheffield", "nottingham", "oxford", "cambridge", "york", "bath"
+        }
+        if title:
+            chunks = [c.strip() for c in re.split(r"[\|\—\–\-\•\:\,]", title) if c.strip()]
+            bad_words = ("home", "welcome", "about", "contact", "official site", "residential")
+            for chunk in chunks:
+                c_lower = chunk.lower().strip()
+                if any(b in c_lower for b in bad_words) or len(chunk) < 3 or len(chunk) > 45:
+                    continue
+                if c_lower in generic_descriptors:
+                    continue
+                c_clean = re.sub(r"[^a-z0-9]", "", c_lower)
+                score = 1.0
+                if c_clean == domain_clean:
+                    score += 10.0
+                elif c_clean in domain_clean or domain_clean in c_clean:
+                    score += 5.0
+
+                # Check for acronym match (e.g. Halliday Fraser Munro -> hfm)
+                words = [w for w in re.split(r"\s+", c_lower) if w]
+                initials = "".join(w[0] for w in words)
+                if len(domain_clean) >= 3 and initials == domain_clean:
+                    score += 8.0
+
+                if any(k in c_lower for k in ("architects", "architecture", "studio", "design", "practice")):
+                    score += 2.0
+                for city in uk_cities:
+                    if c_lower in (city, f"architects {city}", f"{city} architects", f"architects in {city}", f"architecture in {city}"):
+                        score -= 5.0
+                candidates.append((chunk, score))
+
+        ld_matches = re.findall(r'<script\s+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', html, re.I | re.S)
+        for ld in ld_matches:
+            nm = re.search(r'"name"\s*:\s*"([^"]+)"', ld)
+            if nm:
+                name = nm.group(1).strip()
+                if 2 < len(name) < 45 and not any(x in name.lower() for x in ("home", "welcome")) and name.lower() not in generic_descriptors:
+                    score = 3.0
+                    if re.sub(r"[^a-z0-9]", "", name.lower()) == domain_clean:
+                        score += 10.0
+                    candidates.append((name, score))
+
+        og_match = re.search(r'<meta\s+[^>]*property=["\']og:site_name["\'][^>]*content=["\']([^"\']+)["\']', html, re.I)
+        if not og_match:
+            og_match = re.search(r'<meta\s+[^>]*content=["\']([^"\']+)["\'][^>]*property=["\']og:site_name["\']', html, re.I)
+        if og_match:
+            og_name = og_match.group(1).strip()
+            if 2 < len(og_name) < 45 and not any(x in og_name.lower() for x in ("home", "welcome", "wordpress", "elementor")):
+                score = 2.0
+                if re.sub(r"[^a-z0-9]", "", og_name.lower()) == domain_clean:
+                    score += 10.0
+                candidates.append((og_name, score))
+
+        if candidates:
+            candidates.sort(key=lambda x: x[1], reverse=True)
+            import html
+            return html.unescape(candidates[0][0])
+
+        import html
+        return html.unescape(default_name)

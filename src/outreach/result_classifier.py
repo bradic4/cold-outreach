@@ -7,7 +7,8 @@ class ResultClassifier:
         "houzz.com", "houzz.co.uk", "clutch.co", "near.co.uk", "yell.com",
         "checkatrade.com", "trustpilot.com", "linkedin.com", "facebook.com",
         "instagram.com", "pinterest.com", "wikipedia.org", "grokipedia.com",
-        "find-my-architect.com",
+        "find-my-architect.com", "procore.com", "bark.com", "mybuilder.com",
+        "threebestrated.co.uk", "planningarchitectural.co.uk",
     }
     EDITORIAL_DOMAINS = {"e-architect.com", "re-thinkingthefuture.com"}
     DIRECTORY_PATH_PATTERNS = (

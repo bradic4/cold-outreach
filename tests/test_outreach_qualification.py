@@ -78,8 +78,11 @@ def test_personalizer_first_name_and_company_name():
         "lcp_ms": 5500,
         "tbt_ms": 1200,
     })
-    assert sub == "Quick question about Andrew Wallace Architects"
-    assert body.startswith("Hi Andrew,\n\nI came across Andrew Wallace Architects and noticed the mobile site is doing a lot of work before the main content becomes responsive")
+    assert sub == "Andrew Wallace Architects site speed"
+    assert body.startswith("Hi Andrew,\n\nI had a look at the Andrew Wallace Architects website")
+    assert "slower than it needs to be, especially on mobile" in body
+    assert "without changing the design or adding more plugins" in body
+    assert body.endswith("Want me to send it over?\n\nIvan")
 
 
 def test_site_analyzer_extract_company_name():

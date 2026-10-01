@@ -31,7 +31,7 @@ class ContactFinder:
         "coventry", "hull", "bradford", "stoke", "wolverhampton", "swansea",
         "dundee", "inverness", "reading", "brighton", "bournemouth", "luton",
         "northampton", "miltonkeynes", "swindon", "westyorkshire", "yorkshire",
-        "uk", "studio", "support", "help", "press", "media", "sales",
+        "uk", "studio", "support", "help", "press", "media", "sales", "marketing",
         "recruitment", "recruit", "careers", "jobs", "work", "hr",
         "billing", "accounts", "finance", "legal", "privacy", "compliance",
         "team", "feedback", "post", "bookings", "booking", "architecture",

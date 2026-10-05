@@ -40,12 +40,51 @@ class SiteAnalyzer:
             "scripts": len(re.findall(r"<script\b", lower)),
             "stylesheets": len(re.findall(r"<link\b[^>]*rel=[\"']?stylesheet", lower)),
             "images": len(re.findall(r"<img\b", lower)),
-            "commercial_intent": any(x in lower for x in ("our services", "our projects", "services", "portfolio", "case studies")),
-            "conversion_intent": any(x in lower for x in ("request a quote", "get a quote", "book a consultation", "book a call", "contact us", "enquire", "get in touch")),
-            "business_identity": any(x in lower for x in ("company number", "registered office", "our studio", "our practice", "our company")),
-            "team_signal": any(x in lower for x in ("our team", "meet the team", "our people", "/team", "/people")),
-            "enterprise_signal": sum(lower.count(x) for x in ("our offices", "our studios", "locations", "international", "global")) >= 3,
-            "internal_marketing_it": any(x in lower for x in ("marketing director", "marketing manager", "head of marketing", "it manager", "head of it", "digital director")),
+            "commercial_intent": any(
+                x in lower
+                for x in (
+                    "our services", "our projects", "services", "portfolio", "case studies",
+                    "usluge", "naše usluge", "nase usluge", "nekretnine", "prodaja", "izdavanje",
+                    "ponuda", "projekti", "stanovi", "delatnost",
+                )
+            ),
+            "conversion_intent": any(
+                x in lower
+                for x in (
+                    "request a quote", "get a quote", "book a consultation", "book a call",
+                    "contact us", "enquire", "get in touch", "kontakt", "kontaktirajte nas",
+                    "zakažite", "zakazite", "pošaljite upit", "posaljite upit", "upit",
+                    "pozovite nas", "pošaljite poruku", "posaljite poruku",
+                )
+            ),
+            "business_identity": any(
+                x in lower
+                for x in (
+                    "company number", "registered office", "our studio", "our practice", "our company",
+                    "pib", "matični broj", "maticni broj", "o nama", "o agenciji", "registrovana",
+                    "sedište", "sediste",
+                )
+            ),
+            "team_signal": any(
+                x in lower
+                for x in (
+                    "our team", "meet the team", "our people", "/team", "/people",
+                    "naš tim", "nas tim", "agenti", "naši agenti", "nasi agenti",
+                    "zaposleni", "/o-nama", "/tim",
+                )
+            ),
+            "enterprise_signal": sum(
+                lower.count(x)
+                for x in ("our offices", "our studios", "international", "global", "globalna", "multinational")
+            ) >= 3,
+            "internal_marketing_it": any(
+                x in lower
+                for x in (
+                    "marketing director", "marketing manager", "head of marketing",
+                    "it manager", "head of it", "digital director",
+                    "direktor marketinga", "marketing menadžer", "marketing menadzer", "it sektor",
+                )
+            ),
             "is_agency": any(
                 x in lower
                 for x in ("web design agency", "digital agency", "seo agency", "marketing agency")

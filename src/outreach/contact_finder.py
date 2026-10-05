@@ -5,7 +5,7 @@ import requests
 
 class ContactFinder:
     EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
-    PAGES = ("", "/contact", "/contact-us", "/about", "/about-us", "/team", "/people")
+    PAGES = ("", "/contact", "/contact-us", "/about", "/about-us", "/team", "/people", "/kontakt", "/o-nama", "/tim")
     BAD = (
         "example.com", "sentry.io", "wixpress.com", "wordpress.org", "elementor.com",
         "mail.com", "email.com", "domain.com", "yourdomain.com", "site.com", "yoursite.com",
@@ -43,7 +43,7 @@ class ContactFinder:
     PRIMARY_INBOXES = {
         "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",
         "hello", "welcome", "contact", "contacts", "general", "reception", "studio",
-        "email", "home", "mail"
+        "email", "home", "mail", "kontakt", "prodaja", "agencija"
     }
     LOW_PRIORITY_INBOXES = {
         "recruitment", "recruit", "careers", "jobs", "work", "hr",

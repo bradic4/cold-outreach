@@ -116,7 +116,7 @@ def test_personalizer_serbian_template():
     assert body.startswith("Zdravo Marko,\n\nPogledao sam nekretnine-mostar.ba na telefonu")
     assert "5,8 sekundi" in body
     assert "agencija za nekretnine" in body
-    assert "Mogu da vam pošaljem kratak spisak 3 stvari koje bih prve popravio" in body
+    assert "Mogu da vam pošaljem kratku analizu sa 3 konkretne stvari" in body
 
 
 def test_personalizer_omits_claim_without_measurable_proof():

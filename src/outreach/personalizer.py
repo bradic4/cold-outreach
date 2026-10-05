@@ -115,7 +115,7 @@ class Personalizer:
     def signature(sender, lang: str = "en"):
         lines = [sender["full_name"]]
         if lang == "sr":
-            title = sender.get("title_sr") or "Web developer i SEO specijalista"
+            title = sender.get("title_sr") or "Web Developer & Conversion Specialist"
             proof = sender.get("proof_result_sr") or "Ubrzan mobilni sajt sa 5,1s na 3,5s (54% manja stranica)"
         else:
             title = sender.get("title") or "Web performance & WordPress developer"
@@ -153,9 +153,13 @@ class Personalizer:
         }
         if (
             len(first_name) <= 1
-            or first_name.lower() in company.lower()
+            or first_name.lower() == company.lower()
             or "doo" in first_name.lower()
             or first_name.lower() in generic_first_names
+            or any(
+                company.lower().startswith(first_name.lower() + sfx)
+                for sfx in (" nekretnine", " doo", " d.o.o.", " agency", " ltd")
+            )
         ):
             first_name = ""
 
@@ -170,18 +174,18 @@ class Personalizer:
 
         if lang == "sr":
             greeting = f"Zdravo {first_name}," if first_name else "Zdravo,"
-            subject = f"{company} – {finding_subj}"
+            subject = f"{company} – {finding_subj} (curenje upita)"
             p1 = (
                 f"Pogledao sam {domain} na telefonu: početna stranica postane upotrebljiva "
                 f"tek posle oko {sec_str_sr} sekundi, uglavnom zbog {cause}."
             )
             p2 = (
-                f"Kod {biz_type} većina ljudi prvo proveri sajt sa telefona, "
-                f"pa se upiti gube već na tom koraku. {fix}"
+                f"Kod {biz_type} većina ljudi ponudu gleda sa telefona. "
+                "Problem sa sporim učitavanjem je što posetioci odustanu, pa upiti i pozivi bukvalno cure pre nego što uopšte vide vašu ponudu."
             )
             p3 = (
-                "Mogu da vam pošaljem kratak spisak 3 stvari koje bih prve popravio, "
-                "bez obaveze. Da li da ga pošaljem?"
+                f"{fix} Mogu da vam pošaljem kratku analizu sa 3 konkretne stvari koje možete odmah popraviti, "
+                "bez ikakvih obaveza. Vredi li da vam pošaljem?"
             )
             paragraphs = [greeting, p1, f"{p2}\n\n{p3}", cls.signature(sender, lang="sr")]
         else:

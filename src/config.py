@@ -416,3 +416,28 @@ def get_outreach_qualification_config() -> dict:
         "priority_threshold": int(raw.get("priority_threshold", 10)),
         "analyze_limit": int(raw.get("analyze_limit", 30)),
     }
+
+
+def get_outreach_sender_config() -> dict:
+    """Return sender identity, signature proof and deliverability settings.
+
+    Missing values default to empty so the send gate can refuse to send
+    until the identity/proof is configured (never invent proof).
+    """
+    with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
+        raw = json.load(file).get("outreach_sender", {})
+    return {
+        "full_name": str(raw.get("full_name", "Ivan Bradić")).strip(),
+        "title": str(raw.get("title", "")).strip(),
+        "portfolio_url": str(raw.get("portfolio_url", "")).strip(),
+        # Measurable, verifiable result, e.g. "mobile LCP 4.2s -> 1.8s".
+        "proof_result": str(raw.get("proof_result", "")).strip(),
+        # One concrete example the reader can open (named client or case study URL).
+        "proof_example": str(raw.get("proof_example", "")).strip(),
+        "reply_to": str(raw.get("reply_to", "")).strip(),
+        "dkim_selector": str(raw.get("dkim_selector", "")).strip(),
+        # Warm-up: max sends per day on the dedicated domain (ramp up slowly).
+        "daily_cap": int(raw.get("daily_cap", 5)),
+        # Free-mail domains are blocked as senders unless explicitly allowed.
+        "allow_freemail_sender": bool(raw.get("allow_freemail_sender", False)),
+    }

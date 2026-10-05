@@ -1,8 +1,9 @@
 import argparse
 import csv
+import json
 import os
 import sys
-import yagmail
+from datetime import date
 
 if hasattr(sys.stdout, "reconfigure"):
     try:
@@ -12,8 +13,10 @@ if hasattr(sys.stdout, "reconfigure"):
         pass
 
 sys.path.insert(0, os.path.dirname(__file__))
-from config import ROOT_DIR, get_email_credentials
+from config import ROOT_DIR, get_email_credentials, get_outreach_sender_config
 from classes.Outreach import Outreach
+from outreach import mailer
+from outreach.personalizer import Personalizer
 
 
 def load_queue(path):
@@ -34,7 +37,25 @@ def main():
     rows = load_queue(args.queue)
     creds = get_email_credentials()
     sender = Outreach()
-    yag = None
+    sender_cfg = get_outreach_sender_config()
+
+    missing = Personalizer.sender_missing(sender_cfg)
+    if missing:
+        raise SystemExit(f"Refusing to send: set outreach_sender.{', '.join(missing)} in config.json first.")
+    from_addr = creds["username"]
+    auth = mailer.check_domain_auth(mailer.sender_domain(from_addr), sender_cfg["dkim_selector"])
+    problems = mailer.send_gate_problems(sender_cfg, from_addr, auth)
+    if problems:
+        raise SystemExit("Refusing to send:\n- " + "\n- ".join(problems))
+
+    daily_file = os.path.join(ROOT_DIR, ".mp", "outreach_sender_daily.json")
+    today = date.today().isoformat()
+    sent_today = 0
+    if os.path.exists(daily_file):
+        with open(daily_file, "r", encoding="utf-8") as df:
+            stats = json.load(df)
+        if stats.get("date") == today:
+            sent_today = int(stats.get("count", 0))
 
     history_file = os.path.join(ROOT_DIR, ".mp", "sent_emails_history.txt")
     sent_history = set()
@@ -98,12 +119,18 @@ def main():
             break
         if confirm != "SEND":
             continue
-        if yag is None:
-            yag = yagmail.SMTP(user=creds["username"], password=creds["password"], port=int(creds.get("smtp_port", 465)))
+        if sent_today >= sender_cfg["daily_cap"]:
+            print(f"Daily warm-up cap reached ({sender_cfg['daily_cap']}); stopping for today.")
+            break
         try:
-            yag.send(to=email, subject=row["subject"], contents=row["message"])
+            msg = mailer.build_message(sender_cfg, from_addr, email, row["subject"], row["message"])
+            mailer.send_message(creds, msg)
             row["status"] = "sent"
             print("Sent.")
+            sent_today += 1
+            os.makedirs(os.path.dirname(daily_file), exist_ok=True)
+            with open(daily_file, "w", encoding="utf-8") as df:
+                json.dump({"date": today, "count": sent_today}, df)
             os.makedirs(os.path.dirname(history_file), exist_ok=True)
             with open(history_file, "a", encoding="utf-8") as hf:
                 hf.write(email.lower().strip() + "\n")

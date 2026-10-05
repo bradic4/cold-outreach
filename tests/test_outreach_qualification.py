@@ -70,6 +70,19 @@ def test_generic_email_not_elevated_by_nearby_keywords():
     assert role in ("london", "general")
 
 
+SENDER = {
+    "full_name": "Test Sender",
+    "title": "Web performance",
+    "portfolio_url": "https://portfolio.example",
+    "proof_result": "mobile LCP from 4.2s to 1.8s",
+    "proof_example": "https://portfolio.example/case",
+    "reply_to": "",
+    "dkim_selector": "",
+    "daily_cap": 5,
+    "allow_freemail_sender": False,
+}
+
+
 def test_personalizer_first_name_and_company_name():
     from src.outreach.personalizer import Personalizer
     sub, body = Personalizer.draft({
@@ -77,26 +90,42 @@ def test_personalizer_first_name_and_company_name():
         "first_name": "Andrew",
         "lcp_ms": 5500,
         "tbt_ms": 1200,
-    })
+    }, sender=SENDER)
     assert sub == "Andrew Wallace Architects site speed"
     assert body.startswith("Hi Andrew,\n\nI had a look at the Andrew Wallace Architects website")
     assert "slower than it needs to be, especially on mobile" in body
-    assert "without changing the design or adding more plugins" in body
-    assert "another architecture studio" in body
-    assert body.endswith("Want me to send it over?\n\nIvan")
+    assert "mobile LCP from 4.2s to 1.8s" in body
+    assert "another architecture studio" not in body and "another law firm" not in body
+    assert body.endswith("Test Sender\nWeb performance\nPortfolio: https://portfolio.example\nExample: https://portfolio.example/case")
 
 
-def test_personalizer_law_firm():
+def test_personalizer_omits_claim_without_measurable_proof():
     from src.outreach.personalizer import Personalizer
-    sub, body = Personalizer.draft({
-        "company_name": "Stephensons Solicitors",
-        "first_name": "Sean",
-        "url": "https://www.stephensons.co.uk",
-    })
-    assert sub == "Stephensons Solicitors site speed"
-    assert body.startswith("Hi Sean,\n\nI had a look at the Stephensons Solicitors website")
-    assert "for another law firm" in body
-    assert body.endswith("Want me to send it over?\n\nIvan")
+    sender = {**SENDER, "proof_result": ""}
+    _, body = Personalizer.draft({"company_name": "Stephensons Solicitors", "first_name": "Sean"}, sender=sender)
+    assert "recently" not in body
+    assert Personalizer.sender_missing(sender) == ["proof_result"]
+
+
+def test_mailer_message_is_plain_text_with_clean_headers():
+    from src.outreach import mailer
+    msg = mailer.build_message(SENDER, "me@outreach-domain.co.uk", "a@b.co.uk", "S", "line1\n\nline2")
+    raw = msg.as_string()
+    assert "yagmail" not in raw and "<br>" not in raw
+    assert msg.get_content_type() == "text/plain"
+    assert msg["Message-ID"].endswith("@outreach-domain.co.uk>")
+    assert msg["From"].startswith("Test Sender <")
+
+
+def test_send_gate_blocks_freemail_and_missing_auth():
+    from src.outreach import mailer
+    problems = mailer.send_gate_problems(SENDER, "me@gmail.com")
+    assert any("free-mail" in p for p in problems)
+    auth = {"spf": True, "dkim": False, "dmarc": False, "dmarc_policy": ""}
+    problems = mailer.send_gate_problems(SENDER, "me@outreach-domain.co.uk", auth)
+    assert any("DKIM" in p for p in problems) and any("DMARC" in p for p in problems)
+    ok = {"spf": True, "dkim": True, "dmarc": True, "dmarc_policy": "none"}
+    assert mailer.send_gate_problems(SENDER, "me@outreach-domain.co.uk", ok) == []
 
 
 def test_site_analyzer_extract_company_name():

@@ -48,5 +48,16 @@
     "qualified_threshold": 7,
     "priority_threshold": 10,
     "analyze_limit": 30
+  },
+  "outreach_sender": {
+    "full_name": "Your Full Name",
+    "title": "Web performance for professional-services sites",
+    "portfolio_url": "https://your-portfolio.example",
+    "proof_result": "mobile LCP from 4.2s to 1.8s",
+    "proof_example": "https://your-portfolio.example/case-study",
+    "reply_to": "",
+    "dkim_selector": "",
+    "daily_cap": 5,
+    "allow_freemail_sender": false
   }
 }

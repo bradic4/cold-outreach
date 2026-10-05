@@ -33,6 +33,7 @@ def save_queue(path,rows):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--queue", default=os.path.join(ROOT_DIR, "data", "outreach_queue.csv"))
+    p.add_argument("--yes", action="store_true", help="Automatically approve ready leads in queue")
     args = p.parse_args()
     rows = load_queue(args.queue)
     creds = get_email_credentials()
@@ -82,10 +83,13 @@ def main():
         print(f'Contact: {contact_info} ({row.get("role") or "unknown role"})')
         print(f'Perf {row.get("lighthouse_score")} | LCP {row.get("lcp_ms")}ms | TBT {row.get("tbt_ms")}ms')
         print(f'\nSubject: {row.get("subject")}\n\n{row.get("message")}\n')
-        try:
-            action = input("[S] Send  [K] Skip  [E] Edit  [B] Blacklist  [Q] Quit: ").strip().lower()
-        except (EOFError, KeyboardInterrupt):
-            break
+        if args.yes:
+            action = "s"
+        else:
+            try:
+                action = input("[S] Send  [K] Skip  [E] Edit  [B] Blacklist  [Q] Quit: ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                break
         if action == "q":
             break
         if action == "k":
@@ -115,12 +119,13 @@ def main():
             row["status"] = "invalid_email"
             save_queue(args.queue, rows)
             continue
-        try:
-            confirm = input(f"Type SEND to confirm delivery to {email}: ").strip()
-        except (EOFError, KeyboardInterrupt):
-            break
-        if confirm != "SEND":
-            continue
+        if not args.yes:
+            try:
+                confirm = input(f"Type SEND to confirm delivery to {email}: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                break
+            if confirm != "SEND":
+                continue
         if sent_today >= sender_cfg["daily_cap"]:
             print(f"Daily warm-up cap reached ({sender_cfg['daily_cap']}); stopping for today.")
             break

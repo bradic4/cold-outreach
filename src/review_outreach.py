@@ -54,11 +54,21 @@ def main():
     daily_file = os.path.join(ROOT_DIR, ".mp", "outreach_sender_daily.json")
     today = date.today().isoformat()
     sent_today = 0
+    stats = {}
     if os.path.exists(daily_file):
-        with open(daily_file, "r", encoding="utf-8") as df:
-            stats = json.load(df)
-        if stats.get("date") == today:
-            sent_today = int(stats.get("count", 0))
+        try:
+            with open(daily_file, "r", encoding="utf-8") as df:
+                stats = json.load(df)
+        except Exception:
+            stats = {}
+    if stats.get("date") != today:
+        stats = {"date": today, "senders": {}}
+    elif "senders" not in stats:
+        # Migrate flat format to sender map
+        stats["senders"] = {}
+        if stats.get("count"):
+            stats["senders"]["legacy"] = stats["count"]
+    sent_today = stats.get("senders", {}).get(from_addr, 0)
 
     history_file = os.path.join(ROOT_DIR, ".mp", "sent_emails_history.txt")
     sent_history = set()
@@ -135,9 +145,14 @@ def main():
             row["status"] = "sent"
             print("Sent.")
             sent_today += 1
+            if "senders" not in stats:
+                stats["senders"] = {}
+            stats["senders"][from_addr] = sent_today
+            stats["count"] = sum(stats["senders"].values())
+            stats["date"] = today
             os.makedirs(os.path.dirname(daily_file), exist_ok=True)
             with open(daily_file, "w", encoding="utf-8") as df:
-                json.dump({"date": today, "count": sent_today}, df)
+                json.dump(stats, df, indent=2)
             os.makedirs(os.path.dirname(history_file), exist_ok=True)
             with open(history_file, "a", encoding="utf-8") as hf:
                 hf.write(email.lower().strip() + "\n")

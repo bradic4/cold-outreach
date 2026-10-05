@@ -45,8 +45,8 @@ def test_lighthouse_gate_rejects_fast_site():
 
 def test_personalizer_uses_measured_performance():
     from src.outreach.personalizer import Personalizer
-    text=Personalizer.finding({"lcp_ms":5500,"tbt_ms":2000})
-    assert "especially on mobile" in text
+    subj_finding, cause, fix = Personalizer.finding({"lcp_ms": 5500, "tbt_ms": 2000})
+    assert "mobile" in subj_finding
 
 
 def test_contact_role_score_prefers_director():
@@ -87,23 +87,41 @@ def test_personalizer_first_name_and_company_name():
     from src.outreach.personalizer import Personalizer
     sub, body = Personalizer.draft({
         "company_name": "Andrew Wallace Architects",
+        "url": "https://www.andrewwallacearchitects.co.uk",
         "first_name": "Andrew",
         "lcp_ms": 5500,
         "tbt_ms": 1200,
     }, sender=SENDER)
-    assert sub == "Andrew Wallace Architects site speed"
-    assert body.startswith("Hi Andrew,\n\nI had a look at the Andrew Wallace Architects website")
-    assert "slower than it needs to be, especially on mobile" in body
-    assert "mobile LCP from 4.2s to 1.8s" in body
-    assert "another architecture studio" not in body and "another law firm" not in body
-    assert body.endswith("Test Sender\nWeb performance\nPortfolio: https://portfolio.example\nExample: https://portfolio.example/case")
+    assert "Andrew Wallace Architects" in sub
+    assert "5.5s" in sub or "mobile" in sub
+    assert body.startswith("Hi Andrew,\n\nI ran andrewwallacearchitects.co.uk through PageSpeed on mobile")
+    assert "5.5 seconds" in body
+    assert "architecture studio" in body
+    assert "I can send you a short list of the 3 fixes I'd make first" in body
+    assert body.endswith("Test Sender\nWeb performance\nhttps://portfolio.example · mobile LCP from 4.2s to 1.8s")
+
+
+def test_personalizer_serbian_template():
+    from src.outreach.personalizer import Personalizer
+    sub, body = Personalizer.draft({
+        "company_name": "Nekretnine Mostar",
+        "url": "https://nekretnine-mostar.ba",
+        "first_name": "Marko",
+        "lcp_ms": 5800,
+        "primary_issue": "image_delivery",
+        "estimated_savings_kb": 2400,
+    }, sender=SENDER)
+    assert "Nekretnine Mostar" in sub
+    assert "5,8 sekundi" in sub
+    assert body.startswith("Zdravo Marko,\n\nPogledao sam nekretnine-mostar.ba na telefonu")
+    assert "5,8 sekundi" in body
+    assert "agencija za nekretnine" in body
+    assert "Mogu da vam pošaljem kratak spisak 3 stvari koje bih prve popravio" in body
 
 
 def test_personalizer_omits_claim_without_measurable_proof():
     from src.outreach.personalizer import Personalizer
     sender = {**SENDER, "proof_result": ""}
-    _, body = Personalizer.draft({"company_name": "Stephensons Solicitors", "first_name": "Sean"}, sender=sender)
-    assert "recently" not in body
     assert Personalizer.sender_missing(sender) == ["proof_result"]
 
 

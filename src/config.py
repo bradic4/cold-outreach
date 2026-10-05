@@ -429,9 +429,11 @@ def get_outreach_sender_config() -> dict:
     return {
         "full_name": str(raw.get("full_name", "Ivan Bradić")).strip(),
         "title": str(raw.get("title", "")).strip(),
+        "title_sr": str(raw.get("title_sr", "")).strip(),
         "portfolio_url": str(raw.get("portfolio_url", "")).strip(),
         # Measurable, verifiable result, e.g. "mobile LCP 4.2s -> 1.8s".
         "proof_result": str(raw.get("proof_result", "")).strip(),
+        "proof_result_sr": str(raw.get("proof_result_sr", "")).strip(),
         # One concrete example the reader can open (named client or case study URL).
         "proof_example": str(raw.get("proof_example", "")).strip(),
         "reply_to": str(raw.get("reply_to", "")).strip(),

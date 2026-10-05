@@ -84,11 +84,14 @@ def check_domain_auth(domain: str, dkim_selector: str = "") -> dict:
 def send_gate_problems(sender: dict, from_addr: str, auth: dict | None = None) -> list:
     """Reasons sending must be refused. Empty list means OK to send."""
     problems = []
-    if is_freemail(from_addr) and not sender.get("allow_freemail_sender"):
-        problems.append(
-            f"Sender {from_addr} is on a free-mail domain; use a dedicated domain address "
-            "(set outreach_sender.allow_freemail_sender=true only to override)."
-        )
+    if is_freemail(from_addr):
+        if not sender.get("allow_freemail_sender"):
+            problems.append(
+                f"Sender {from_addr} is on a free-mail domain; use a dedicated domain address "
+                "(set outreach_sender.allow_freemail_sender=true only to override)."
+            )
+        return problems
+
     if auth is not None:
         if not auth["spf"]:
             problems.append("SPF record missing for sender domain.")

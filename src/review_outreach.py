@@ -43,7 +43,9 @@ def main():
     if missing:
         raise SystemExit(f"Refusing to send: set outreach_sender.{', '.join(missing)} in config.json first.")
     from_addr = creds["username"]
-    auth = mailer.check_domain_auth(mailer.sender_domain(from_addr), sender_cfg["dkim_selector"])
+    auth = None
+    if not mailer.is_freemail(from_addr):
+        auth = mailer.check_domain_auth(mailer.sender_domain(from_addr), sender_cfg.get("dkim_selector", ""))
     problems = mailer.send_gate_problems(sender_cfg, from_addr, auth)
     if problems:
         raise SystemExit("Refusing to send:\n- " + "\n- ".join(problems))

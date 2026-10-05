@@ -407,7 +407,7 @@ def get_post_bridge_config() -> dict:
 
 def get_outreach_qualification_config() -> dict:
     """Return V3 qualification settings with backwards-compatible defaults."""
-    with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
+    with open(os.path.join(ROOT_DIR, "config.json"), "r", encoding="utf-8") as file:
         raw = json.load(file).get("outreach_qualification", {})
     return {
         "search_region": str(raw.get("search_region", "rs-sr")),
@@ -424,7 +424,7 @@ def get_outreach_sender_config() -> dict:
     Missing values default to empty so the send gate can refuse to send
     until the identity/proof is configured (never invent proof).
     """
-    with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
+    with open(os.path.join(ROOT_DIR, "config.json"), "r", encoding="utf-8") as file:
         raw = json.load(file).get("outreach_sender", {})
     return {
         "full_name": str(raw.get("full_name", "Ivan Bradić")).strip(),

@@ -1,1 +1,8 @@
-{"date": "2026-10-05", "count": 5}
+{
+  "date": "2026-10-05",
+  "senders": {
+    "ivanbradic.biz@gmail.com": 5,
+    "ivanbradic46@gmail.com": 3
+  },
+  "count": 8
+}

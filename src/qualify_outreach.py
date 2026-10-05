@@ -121,7 +121,7 @@ def main():
         if contact["email"].strip().lower() in sent_history:
             continue
         seen_domains.add(domain)
-        draft_row = {**row, **contact, "company": company, "company_name": company}
+        draft_row = {**row, **contact, "company": company, "company_name": company, "query": query}
         subject, message = Personalizer.draft(draft_row)
         queue_rows.append({
             "company": company, "url": row["url"], "contact_name": contact.get("name", ""),

@@ -146,7 +146,17 @@ class Personalizer:
         url = row.get("url", "")
         domain = url.split("//")[-1].split("/")[0].replace("www.", "") or company
         first_name = (row.get("first_name") or "").strip()
-        if len(first_name) <= 1:
+        generic_first_names = {
+            "stanovi", "stan", "nekretnine", "agencija", "prodaja", "izdavanje",
+            "office", "info", "kontakt", "upit", "podrska", "admin", "mail", "posao",
+            "novisad", "beograd", "nis", "kragujevac", "subotica", "mostar"
+        }
+        if (
+            len(first_name) <= 1
+            or first_name.lower() in company.lower()
+            or "doo" in first_name.lower()
+            or first_name.lower() in generic_first_names
+        ):
             first_name = ""
 
         lang = cls.detect_language(row)

@@ -7,8 +7,8 @@ class ContactFinder:
     EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
     PAGES = ("", "/contact", "/contact-us", "/about", "/about-us", "/team", "/people", "/kontakt", "/o-nama", "/tim")
     BAD = (
-        "example.com", "sentry.io", "wixpress.com", "wordpress.org", "elementor.com",
-        "mail.com", "email.com", "domain.com", "yourdomain.com", "site.com", "yoursite.com",
+        "@example.com", "sentry.io", "wixpress.com", "wordpress.org", "elementor.com",
+        "@mail.com", "@email.com", "@domain.com", "@yourdomain.com", "@site.com", "@yoursite.com",
         "example@", "test@", "user@", "username@", "yourname@"
     )
     BAD_TLDS = {
@@ -38,7 +38,9 @@ class ContactFinder:
         "architects", "design", "projects", "commercial", "residential",
         "consult", "consulting", "customerservice", "customer", "directors", "partners", "management",
         "email", "home", "web", "online", "main", "solicitors", "solicitor", "law", "lawyers", "lawyer",
-        "claims", "cases", "conveyancing", "litigation", "solihull", "maidstone", "leatherhead", "colmore"
+        "claims", "cases", "conveyancing", "litigation", "solihull", "maidstone", "leatherhead", "colmore",
+        "stanovi", "stan", "nekretnine", "agencija", "prodaja", "izdavanje", "posao", "podrska", "upit",
+        "novisad", "beograd", "nis", "kragujevac", "subotica", "mostar", "sarajevo", "zagreb"
     }
     PRIMARY_INBOXES = {
         "info", "office", "enquiries", "enquiry", "inquiries", "inquiry",

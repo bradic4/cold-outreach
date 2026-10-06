@@ -11,6 +11,9 @@ class Personalizer:
             return "sr"
         if explicit in ("en", "eng"):
             return "en"
+        query = str(row.get("query") or "").lower()
+        if any(w in query for w in ("srbij", "beograd", "novi sad", "nis", "zlatibor", "stanov", "kuc", "ordinacij", "hirurgij", "apartman")):
+            return "sr"
         url = (row.get("url") or "").lower()
         domain = url.split("//")[-1].split("/")[0].replace("www.", "")
         tld = domain.split(".")[-1]
@@ -33,10 +36,12 @@ class Personalizer:
             return "arhitektonskih studija" if lang == "sr" else "an architecture studio"
         if any(w in text for w in ("solicitor", "lawyer", "attorney", "law", "advokat", "pravn")):
             return "advokatskih kancelarija" if lang == "sr" else "a law firm"
-        if any(w in text for w in ("nekretnin", "estate", "property", "stanov", "real estate", "agencija za nekretnine")):
-            return "agencija za nekretnine" if lang == "sr" else "an estate agency"
-        if any(w in text for w in ("dental", "dentist", "stomatolog", "klinik", "clinic", "ordinacij")):
-            return "privatnih ordinacija" if lang == "sr" else "a private clinic"
+        if any(w in text for w in ("nekretnin", "estate", "property", "stanov", "real estate", "agencija za nekretnine", "apartman", "novogradn")):
+            return "agencija za nekretnine i investitora" if lang == "sr" else "an estate agency"
+        if any(w in text for w in ("montazn", "brvnar", "kuce", "gradjev", "drvenekuce")):
+            return "proizvođača i graditelja kuća" if lang == "sr" else "a home builder"
+        if any(w in text for w in ("dental", "dentist", "stomatolog", "klinik", "clinic", "ordinacij", "hirurg", "estetsk", "medic")):
+            return "privatnih klinika i ordinacija" if lang == "sr" else "a private clinic"
         return "uslužnih firmi" if lang == "sr" else "service businesses"
 
     @staticmethod

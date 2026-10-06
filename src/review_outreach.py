@@ -129,6 +129,11 @@ def main():
             row["status"] = "invalid_email"
             save_queue(args.queue, rows)
             continue
+        if not mailer.verify_mailbox_smtp(email, sender_addr=from_addr):
+            print(f"Mailbox {email} rejected by server (550 User unknown); not sent.")
+            row["status"] = "mailbox_rejected"
+            save_queue(args.queue, rows)
+            continue
         if not args.yes:
             try:
                 confirm = input(f"Type SEND to confirm delivery to {email}: ").strip()

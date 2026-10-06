@@ -50,6 +50,34 @@ def send_message(email_cfg: dict, msg: EmailMessage) -> None:
             smtp.send_message(msg)
 
 
+def verify_mailbox_smtp(email: str, sender_addr: str = "ivanbradic46@gmail.com", timeout: int = 8) -> bool:
+    """Check if the mailbox actually exists via SMTP RCPT TO probe.
+    Returns True if 250 OK or server doesn't support RCPT probes.
+    Returns False only on definitive rejection (500-554 User unknown / mailbox rejected).
+    """
+    if not email or "@" not in email:
+        return False
+    domain = email.split("@")[1].strip().lower()
+    import dns.resolver
+
+    resolver = dns.resolver.Resolver(configure=False)
+    resolver.nameservers = ["8.8.8.8", "1.1.1.1"]
+    resolver.lifetime = 6
+    try:
+        answers = resolver.resolve(domain, "MX", tcp=True)
+        mx_host = sorted(answers, key=lambda r: r.preference)[0].exchange.to_text()
+        with smtplib.SMTP(mx_host, 25, timeout=timeout) as s:
+            s.helo("gmail.com")
+            s.mail(sender_addr)
+            code, _ = s.rcpt(email)
+            if 500 <= code <= 554:
+                return False
+            return True
+    except Exception:
+        # If server blocks port 25 or greylists, allow by default
+        return True
+
+
 def _txt_records(name: str) -> list:
     import dns.resolver
 

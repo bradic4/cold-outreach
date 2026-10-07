@@ -170,7 +170,7 @@ class Outreach:
                 return False
 
             import dns.resolver
-            resolver = dns.resolver.Resolver()
+            resolver = dns.resolver.Resolver(configure=False)
             resolver.nameservers = ['8.8.8.8', '1.1.1.1']
             resolver.timeout = 5
             resolver.lifetime = 5

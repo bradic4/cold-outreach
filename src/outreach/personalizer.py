@@ -32,8 +32,8 @@ class Personalizer:
             str(row.get("role") or ""),
         ]).lower()
 
-        if any(w in text for w in ("architect", "arhitekt")):
-            return "arhitektonskih studija" if lang == "sr" else "an architecture studio"
+        if any(w in text for w in ("architect", "arhitekt", "enterijer", "interior", "dizajn enterijera")):
+            return "arhitektonskih i dizajnerskih studija" if lang == "sr" else "an architecture or design studio"
         if any(w in text for w in ("solicitor", "lawyer", "attorney", "law", "advokat", "pravn")):
             return "advokatskih kancelarija" if lang == "sr" else "a law firm"
         if any(w in text for w in ("nekretnin", "estate", "property", "stanov", "real estate", "agencija za nekretnine", "apartman", "novogradn")):

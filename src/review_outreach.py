@@ -14,6 +14,12 @@ if hasattr(sys.stdout, "reconfigure"):
 
 sys.path.insert(0, os.path.dirname(__file__))
 from config import ROOT_DIR, get_email_credentials, get_outreach_sender_config
+try:
+    import dns.resolver
+    dns.resolver.Resolver.read_hosts_file = lambda *a, **kw: None
+except Exception:
+    pass
+
 from classes.Outreach import Outreach
 from outreach import mailer
 from outreach.personalizer import Personalizer

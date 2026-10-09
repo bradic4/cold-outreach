@@ -118,19 +118,11 @@ class Personalizer:
 
     @staticmethod
     def signature(sender, lang: str = "en"):
-        lines = [sender["full_name"]]
-        if lang == "sr":
-            title = sender.get("title_sr") or "Web Developer & Conversion Specialist"
-            proof = sender.get("proof_result_sr") or "Ubrzan mobilni sajt sa 5,1s na 3,5s (54% manja stranica)"
-        else:
-            title = sender.get("title") or "Web performance & WordPress developer"
-            proof = sender.get("proof_result") or "Cut a client's mobile load from 5.1s to 3.5s"
-        lines.append(title)
-
-        portfolio = sender.get("portfolio_url", "").strip()
-        if portfolio and proof:
-            lines.append(f"{portfolio} · {proof}")
-        elif portfolio:
+        lines = []
+        lines.append("Pozdrav," if lang == "sr" else "Best,")
+        lines.append(sender["full_name"])
+        portfolio = sender.get("portfolio_url", "").strip().replace("https://", "").replace("http://", "").rstrip("/")
+        if portfolio:
             lines.append(portfolio)
         return "\n".join(lines)
 
@@ -179,20 +171,36 @@ class Personalizer:
 
         if lang == "sr":
             greeting = f"Zdravo {first_name}," if first_name else "Zdravo,"
-            subject = f"{company} – {finding_subj} (curenje upita)"
+
+            # A/B testing on subject line
+            ab_variant = (row.get("ab_variant") or "").upper().strip()
+            if ab_variant not in ("A", "B"):
+                key = str(row.get("email") or row.get("url") or "")
+                ab_variant = "A" if (sum(ord(c) for c in key) % 2 == 0) else "B"
+
+            if ab_variant == "A":
+                subject = f"Prezentacija za {company} - curenje konverzija i posetilaca na sajtu"
+            else:
+                subject = "Kratka sugestija za vaš sajt"
+
+            is_studio = any(w in biz_type for w in ("studij", "dizajn", "arhitekt"))
+            target_entity = "vašeg studija" if is_studio else "vaše firme"
+            showcase_item = "projekte" if is_studio else "ponudu i usluge"
+
             p1 = (
-                f"Pogledao sam {domain} na telefonu: početna stranica postane upotrebljiva "
-                f"tek posle oko {sec_str_sr} sekundi, uglavnom zbog {cause}."
+                f"Pogledao sam sajt {target_entity} i primetio nekoliko stvari koje bi mogle da se unaprede, "
+                "posebno kada ga potencijalni klijenti otvaraju sa telefona."
             )
             p2 = (
-                f"Kod {biz_type} većina ljudi ponudu gleda sa telefona. "
-                "Problem sa sporim učitavanjem je što posetioci odustanu, pa upiti i pozivi bukvalno cure pre nego što uopšte vide vašu ponudu."
+                f"Kod {biz_type} sajt često predstavlja prvi kontakt sa budućim klijentom. "
+                f"Zato je važno da brzo prikaže {showcase_item} i omogući posetiocima da lako stupe u kontakt."
             )
             p3 = (
-                f"{fix} Mogu da vam pošaljem kratku analizu sa 3 konkretne stvari koje možete odmah popraviti, "
-                "bez ikakvih obaveza. Vredi li da vam pošaljem?"
+                "Bavim se optimizacijom web sajtova i imam nekoliko konkretnih predloga kako biste mogli da poboljšate korisničko iskustvo i povećate šanse za nove upite.\n\n"
+                "Mogu da vam pošaljem kratku besplatnu analizu sa 3 stvari koje bih prvo promenio.\n\n"
+                "Da li biste želeli da je pogledate?"
             )
-            paragraphs = [greeting, p1, f"{p2}\n\n{p3}", cls.signature(sender, lang="sr")]
+            paragraphs = [greeting, p1, p2, p3, cls.signature(sender, lang="sr")]
         else:
             greeting = f"Hi {first_name}," if first_name else "Hi,"
             subject = f"{company} – {finding_subj}"

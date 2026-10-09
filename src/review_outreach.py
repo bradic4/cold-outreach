@@ -3,6 +3,7 @@ import csv
 import json
 import os
 import sys
+import time
 from datetime import date
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -30,10 +31,17 @@ def load_queue(path):
     with open(path,encoding="utf-8",newline="") as f: return list(csv.DictReader(f))
 
 
-def save_queue(path,rows):
+def save_queue(path, rows):
     if not rows: return
-    with open(path,"w",encoding="utf-8",newline="") as f:
-        w=csv.DictWriter(f,fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(rows)
+    fieldnames = []
+    for r in rows:
+        for k in r.keys():
+            if k not in fieldnames:
+                fieldnames.append(k)
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames)
+        w.writeheader()
+        w.writerows(rows)
 
 
 def main():
@@ -152,9 +160,18 @@ def main():
             break
         try:
             msg = mailer.build_message(sender_cfg, from_addr, email, row["subject"], row["message"])
-            mailer.send_message(creds, msg)
+            try:
+                mailer.send_message(creds, msg)
+            except Exception as first_err:
+                if "421" in str(first_err) or "busy" in str(first_err).lower():
+                    print("Server busy (421), pausing 10 seconds before retry...")
+                    time.sleep(10)
+                    mailer.send_message(creds, msg)
+                else:
+                    raise first_err
             row["status"] = "sent"
             print("Sent.")
+            time.sleep(4)
             sent_today += 1
             if "senders" not in stats:
                 stats["senders"] = {}

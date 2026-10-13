@@ -71,7 +71,12 @@ def verify_mailbox_smtp(email: str, sender_addr: str = "ivanbradic46@gmail.com",
             s.mail(sender_addr)
             code, _ = s.rcpt(email)
             if 500 <= code <= 554:
-                return False
+                resp_str = str(_).lower()
+                if any(w in resp_str for w in ("spam", "blocked", "spamhaus", "dnsbl", "rbl", "policy", "client host", "relay", "service unavailable")):
+                    return True
+                if any(w in resp_str for w in ("user unknown", "no such user", "does not exist", "recipient address rejected", "invalid recipient", "mailbox not found", "user not found", "bad destination")):
+                    return False
+                return True
             return True
     except Exception:
         # If server blocks port 25 or greylists, allow by default

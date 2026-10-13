@@ -32,26 +32,26 @@ class Personalizer:
             str(row.get("role") or ""),
         ]).lower()
 
-        if any(w in text for w in ("auto servis", "autoservis", "mehanic", "vulkanizer")):
-            return "auto servisa i radionica" if lang == "sr" else "an auto repair shop"
-        if any(w in text for w in ("knjigovod", "racunovod", "bilans")):
-            return "knjigovodstvenih i računovodstvenih agencija" if lang == "sr" else "an accounting firm"
-        if any(w in text for w in ("namestaj", "kuhinj")):
-            return "firmi za izradu nameštaja po meri" if lang == "sr" else "a custom furniture workshop"
+        if any(w in text for w in ("auto servis", "autoservis", "mehanic", "vulkanizer", "auto repair", "garage")):
+            return "auto servisa i radionica" if lang == "sr" else "auto repair workshops"
+        if any(w in text for w in ("knjigovod", "racunovod", "bilans", "accountant", "accounting")):
+            return "knjigovodstvenih i računovodstvenih agencija" if lang == "sr" else "accounting firms"
+        if any(w in text for w in ("namestaj", "kuhinj", "kitchen", "joinery", "furniture", "woodcraft", "carpentry", "wardrobe", "cabinet")):
+            return "firmi za izradu nameštaja po meri" if lang == "sr" else "bespoke kitchen and joinery companies"
         if any(w in text for w in ("stamparij", "print", "štamp")):
-            return "štamparija i grafičkih studija" if lang == "sr" else "a printing and graphics shop"
-        if any(w in text for w in ("stolarij", "pvc", "alu stolarij")):
-            return "firmi za proizvodnju i ugradnju stolarije" if lang == "sr" else "a window and door manufacturer"
+            return "štamparija i grafičkih studija" if lang == "sr" else "printing and graphics studios"
+        if any(w in text for w in ("stolarij", "pvc", "alu stolarij", "window", "conservator", "glazing", "doors")):
+            return "firmi za proizvodnju i ugradnju stolarije" if lang == "sr" else "window and door specialists"
         if any(w in text for w in ("architect", "arhitekt", "enterijer", "interior", "dizajn enterijera")):
-            return "arhitektonskih i dizajnerskih studija" if lang == "sr" else "an architecture or design studio"
+            return "arhitektonskih i dizajnerskih studija" if lang == "sr" else "architecture and interior design studios"
         if any(w in text for w in ("solicitor", "lawyer", "attorney", "law", "advokat", "pravn")):
-            return "advokatskih kancelarija" if lang == "sr" else "a law firm"
+            return "advokatskih kancelarija" if lang == "sr" else "law firms"
         if any(w in text for w in ("nekretnin", "estate", "property", "stanov", "real estate", "agencija za nekretnine", "apartman", "novogradn")):
-            return "agencija za nekretnine i investitora" if lang == "sr" else "an estate agency"
-        if any(w in text for w in ("montazn", "brvnar", "kuce", "gradjev", "drvenekuce")):
-            return "proizvođača i graditelja kuća" if lang == "sr" else "a home builder"
+            return "agencija za nekretnine i investitora" if lang == "sr" else "estate agencies"
+        if any(w in text for w in ("montazn", "brvnar", "kuce", "gradjev", "drvenekuce", "home builder", "construction", "renovation", "roofing")):
+            return "proizvođača i graditelja kuća" if lang == "sr" else "home builders and specialist contractors"
         if any(w in text for w in ("dental", "dentist", "stomatolog", "klinik", "clinic", "ordinacij", "hirurg", "estetsk", "medic")):
-            return "privatnih klinika i ordinacija" if lang == "sr" else "a private clinic"
+            return "privatnih klinika i ordinacija" if lang == "sr" else "private clinics"
         return "uslužnih firmi" if lang == "sr" else "service businesses"
 
     @staticmethod
@@ -213,20 +213,31 @@ class Personalizer:
             paragraphs = [greeting, p1, p2, p3, cls.signature(sender, lang="sr")]
         else:
             greeting = f"Hi {first_name}," if first_name else "Hi,"
-            subject = f"{company} – {finding_subj}"
+
+            ab_variant = (row.get("ab_variant") or "").upper().strip()
+            if ab_variant not in ("A", "B"):
+                key = str(row.get("email") or row.get("url") or "")
+                ab_variant = "A" if (sum(ord(c) for c in key) % 2 == 0) else "B"
+
+            if ab_variant == "A":
+                subject = f"Quick question about {company}'s website"
+            else:
+                subject = "Quick suggestion for your website"
+
             p1 = (
-                f"I ran {domain} through PageSpeed on mobile: the homepage takes about "
-                f"{sec_str} seconds to become usable, mostly because of {cause}."
+                "I had a look at your company's website and noticed a few things that could be improved, "
+                "especially when potential clients open it on their mobile phone."
             )
             p2 = (
-                f"For {biz_type} that's usually where enquiries get lost, "
-                f"since most people check on their phone first. {fix}"
+                f"For {biz_type}, the website is usually the first point of contact with a future client. "
+                "That's why it's important that it quickly showcases your work and services and makes it effortless for visitors to get in touch."
             )
             p3 = (
-                "I can send you a short list of the 3 fixes I'd make first, "
-                "no strings attached. Want me to?"
+                "I specialize in website optimization and have a few specific ideas on how you could improve the mobile experience and increase enquiries.\n\n"
+                "I can send over a short free breakdown with the 3 things I'd change first.\n\n"
+                "Would you like to take a look at it?"
             )
-            paragraphs = [greeting, p1, f"{p2}\n\n{p3}", cls.signature(sender, lang="en")]
+            paragraphs = [greeting, p1, p2, p3, cls.signature(sender, lang="en")]
 
         return subject, "\n\n".join(paragraphs)
 

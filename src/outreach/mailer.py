@@ -39,6 +39,29 @@ def build_message(sender: dict, from_addr: str, to_addr: str, subject: str, body
 
 def send_message(email_cfg: dict, msg: EmailMessage) -> None:
     server, port = email_cfg["smtp_server"], int(email_cfg.get("smtp_port", 465))
+    auth_type = email_cfg.get("auth_type", "").lower()
+    user = email_cfg["username"]
+
+    # Support OAuth2 / XOAUTH2 for Outlook / Office 365
+    if auth_type == "oauth2" or "outlook" in server.lower() or "office365" in server.lower() or "outlook.com" in user.lower() or "hotmail.com" in user.lower():
+        try:
+            from .outlook_oauth import get_valid_access_token
+        except ImportError:
+            try:
+                from src.outreach.outlook_oauth import get_valid_access_token
+            except ImportError:
+                from outlook_oauth import get_valid_access_token
+        access_token = get_valid_access_token()
+        if access_token:
+            auth_string = f"user={user}\x01auth=Bearer {access_token}\x01\x01"
+            with smtplib.SMTP(server, port, timeout=20) as smtp:
+                smtp.ehlo()
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.ehlo()
+                smtp.auth("XOAUTH2", lambda: auth_string)
+                smtp.send_message(msg)
+            return
+
     if port == 465:
         with smtplib.SMTP_SSL(server, port, timeout=20, context=ssl.create_default_context()) as smtp:
             smtp.login(email_cfg["username"], email_cfg["password"])

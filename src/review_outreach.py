@@ -163,8 +163,9 @@ def main():
             try:
                 mailer.send_message(creds, msg)
             except Exception as first_err:
-                if "421" in str(first_err) or "busy" in str(first_err).lower():
-                    print("Server busy (421), pausing 10 seconds before retry...")
+                err_str = str(first_err).lower()
+                if any(x in err_str for x in ["421", "busy", "timed out", "timeout", "unexpectedly closed"]):
+                    print(f"Transient SMTP error ({first_err}), pausing 10 seconds before retry...")
                     time.sleep(10)
                     mailer.send_message(creds, msg)
                 else:

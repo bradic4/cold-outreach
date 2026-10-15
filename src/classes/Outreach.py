@@ -161,12 +161,12 @@ class Outreach:
                 return False
             domain = email.split("@")[1].strip().lower()
             
-            bogus_domains = [
+            bogus_domains = {
                 "sentry.io", "wixpress.com", "example.com", "domain.com", "email.com", "schema.org", "w3.org",
-                "png", "jpg", "jpeg", "webp", "svg", "js", "css", "gif", "htm", "html", "pdf", "doc", "docx",
                 "registarfirmi.me", "moja-djelatnost.me", "beogradski.press", "firma.co.rs"
-            ]
-            if any(b in domain for b in bogus_domains):
+            }
+            bogus_exts = (".png", ".jpg", ".jpeg", ".webp", ".svg", ".js", ".css", ".gif", ".htm", ".html", ".pdf", ".doc", ".docx")
+            if domain in bogus_domains or domain.endswith(bogus_exts):
                 return False
 
             import dns.resolver

@@ -30,7 +30,7 @@ print(f"Total candidate matches not in history: {len(found)}")
 
 verified = []
 for name, u, em in found:
-    if len(verified) >= 8:
+    if len(verified) >= 10:
         break
     h_ok = False
     try:
@@ -47,7 +47,7 @@ for name, u, em in found:
         print(f"[VERIFIED]: {name} | {u} | {em}")
         verified.append({'company': name, 'url': u, 'email': em})
 
-print(f"\nTotal verified clean for Batch 69: {len(verified)}")
+print(f"\nTotal verified clean for Batch 70: {len(verified)}")
 import json
-with open('.mp/qualified_batch69.json', 'w', encoding='utf-8') as f:
+with open('.mp/qualified_batch70.json', 'w', encoding='utf-8') as f:
     json.dump(verified, f, indent=2)

@@ -103,7 +103,7 @@ for lead in leads:
         "variant": lead["variant"],
         "subject": subj,
         "message": msg,
-        "status": "pending"
+        "status": "ready"
     })
 
 queue_path = os.path.join("data", "outreach_queue.csv")
